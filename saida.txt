@@ -1,0 +1,93 @@
+int, int, 1
+ identifier, main, 1
+ (, (, 1
+), ), 1
+{, {, 2
+  float, float, 3
+ identifier, cos, 3
+,, ,, 3
+ identifier, x, 3
+,, ,, 3
+ identifier, n, 3
+,, ,, 3
+ identifier, term, 3
+,, ,, 3
+ identifier, eps, 3
+,, ,, 3
+ identifier, alt, 3
+;, ;, 3
+  char, char, 4
+ identifier, c, 4
+;, ;, 4
+  identifier, x, 6
+ =, =, 6
+ floatNumber, 3.14159, 6
+;, ;, 6
+  identifier, c, 7
+ =, =, 7
+ character, 'a', 7
+;, ;, 7
+  identifier, eps, 8
+ =, =, 8
+ floatNumber, 0.1, 8
+;, ;, 8
+  identifier, n, 9
+ =, =, 9
+ number, 1, 9
+;, ;, 9
+  identifier, cos, 10
+ =, =, 10
+ number, 1, 10
+;, ;, 10
+  identifier, term, 11
+ =, =, 11
+ number, 1, 11
+;, ;, 11
+  identifier, alt, 12
+ =, =, 12
+ number, -1, 12
+;, ;, 12
+    while, while, 14
+ (, (, 14
+identifier, term, 14
+>, >, 14
+identifier, eps, 14
+), ), 14
+  {, {, 15
+    identifier, term, 16
+ =, =, 16
+ identifier, term, 16
+ *, *, 16
+ identifier, x, 16
+ *, *, 16
+ identifier, x, 16
+ /, /, 16
+ identifier, n, 16
+ /, /, 16
+ (, (, 16
+identifier, n, 16
++, +, 16
+number, 1, 16
+), ), 16
+;, ;, 16
+    identifier, cos, 17
+ =, =, 17
+ identifier, cos, 17
+ +, +, 17
+ identifier, alt, 17
+ *, *, 17
+ identifier, term, 17
+;, ;, 17
+    identifier, alt, 18
+ =, =, 18
+ -, -, 18
+identifier, alt, 18
+;, ;, 18
+    identifier, n, 19
+ =, =, 19
+ identifier, n, 19
+ +, +, 19
+ number, 2, 19
+;, ;, 19
+  }, }, 20
+}, }, 21

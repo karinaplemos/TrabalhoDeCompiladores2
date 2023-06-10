@@ -1,0 +1,4 @@
+"else"                         {printf("else,  %s, %d\n", yytext, count);} 
+if                           {printf("if,  %s, %d\n", yytext, count);} 
+while                        {printf("while,  %s, %d\n", yytext, count);} 
+for                          {printf("for,  %s, %d\n", yytext, count);}
