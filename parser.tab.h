@@ -1,21 +1,20 @@
+/* A Bison parser, made by GNU Bison 3.7.4.  */
 
-/* A Bison parser, made by GNU Bison 2.4.1.  */
+/* Bison interface for Yacc-like parsers in C
 
-/* Skeleton interface for Bison's Yacc-like parsers in C
-   
-      Copyright (C) 1984, 1989, 1990, 2000, 2001, 2002, 2003, 2004, 2005, 2006
-   Free Software Foundation, Inc.
-   
+   Copyright (C) 1984, 1989-1990, 2000-2015, 2018-2020 Free Software Foundation,
+   Inc.
+
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
    the Free Software Foundation, either version 3 of the License, or
    (at your option) any later version.
-   
+
    This program is distributed in the hope that it will be useful,
    but WITHOUT ANY WARRANTY; without even the implied warranty of
    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
    GNU General Public License for more details.
-   
+
    You should have received a copy of the GNU General Public License
    along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
 
@@ -28,57 +27,76 @@
    special exception, which will cause the skeleton and the resulting
    Bison output files to be licensed under the GNU General Public
    License without this special exception.
-   
+
    This special exception was added by the Free Software Foundation in
    version 2.2 of Bison.  */
 
+/* DO NOT RELY ON FEATURES THAT ARE NOT DOCUMENTED in the manual,
+   especially those whose name start with YY_ or yy_.  They are
+   private implementation details that can be changed or removed.  */
 
-/* Tokens.  */
-#ifndef YYTOKENTYPE
-# define YYTOKENTYPE
-   /* Put the tokens into the symbol table, so that GDB and other debuggers
-      know about them.  */
-   enum yytokentype {
-     INT = 258,
-     FLOAT = 259,
-     CHAR = 260,
-     NUMBER = 261,
-     FLOATNUMBER = 262,
-     CHARACTER = 263,
-     IDENTIFIER = 264,
-     FOR = 265,
-     WHILE = 266,
-     IF = 267,
-     ELSE = 268,
-     ASSIGN = 269,
-     EQ = 270,
-     LT = 271,
-     GT = 272,
-     GTE = 273,
-     LTE = 274,
-     NEQ = 275,
-     PLUS = 276,
-     MINUS = 277,
-     ASTERISK = 278,
-     SLASH = 279,
-     SEMICOLON = 280,
-     COMMA = 281,
-     OPENPARENTHESIS = 282,
-     CLOSEPARENTHESIS = 283,
-     OPENBRACKETS = 284,
-     CLOSEBRACKETS = 285
-   };
+#ifndef YY_YY_PARSER_TAB_H_INCLUDED
+# define YY_YY_PARSER_TAB_H_INCLUDED
+/* Debug traces.  */
+#ifndef YYDEBUG
+# define YYDEBUG 0
+#endif
+#if YYDEBUG
+extern int yydebug;
 #endif
 
+/* Token kinds.  */
+#ifndef YYTOKENTYPE
+# define YYTOKENTYPE
+  enum yytokentype
+  {
+    YYEMPTY = -2,
+    YYEOF = 0,                     /* "end of file"  */
+    YYerror = 256,                 /* error  */
+    YYUNDEF = 257,                 /* "invalid token"  */
+    INT = 258,                     /* INT  */
+    FLOAT = 259,                   /* FLOAT  */
+    CHAR = 260,                    /* CHAR  */
+    NUMBER = 261,                  /* NUMBER  */
+    FLOATNUMBER = 262,             /* FLOATNUMBER  */
+    CHARACTER = 263,               /* CHARACTER  */
+    IDENTIFIER = 264,              /* IDENTIFIER  */
+    FOR = 265,                     /* FOR  */
+    WHILE = 266,                   /* WHILE  */
+    IF = 267,                      /* IF  */
+    ELSE = 268,                    /* ELSE  */
+    ASSIGN = 269,                  /* ASSIGN  */
+    EQ = 270,                      /* EQ  */
+    LT = 271,                      /* LT  */
+    GT = 272,                      /* GT  */
+    GTE = 273,                     /* GTE  */
+    LTE = 274,                     /* LTE  */
+    NEQ = 275,                     /* NEQ  */
+    PLUS = 276,                    /* PLUS  */
+    MINUS = 277,                   /* MINUS  */
+    ASTERISK = 278,                /* ASTERISK  */
+    SLASH = 279,                   /* SLASH  */
+    SEMICOLON = 280,               /* SEMICOLON  */
+    COMMA = 281,                   /* COMMA  */
+    OPENPARENTHESIS = 282,         /* OPENPARENTHESIS  */
+    CLOSEPARENTHESIS = 283,        /* CLOSEPARENTHESIS  */
+    OPENBRACKETS = 284,            /* OPENBRACKETS  */
+    CLOSEBRACKETS = 285,           /* CLOSEBRACKETS  */
+    NOELSE = 286                   /* NOELSE  */
+  };
+  typedef enum yytokentype yytoken_kind_t;
+#endif
 
-
+/* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 typedef int YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
-# define yystype YYSTYPE /* obsolescent; will be withdrawn */
 # define YYSTYPE_IS_DECLARED 1
 #endif
 
+
 extern YYSTYPE yylval;
 
+int yyparse (void);
 
+#endif /* !YY_YY_PARSER_TAB_H_INCLUDED  */

@@ -45,8 +45,8 @@ int yywrap(){
     
 }
 
-int main(){
-    yyin=fopen("entrada.txt", "r");
-    yylex();
-    return 0;
-}
+// int main(){
+//     yyin=fopen("entrada.txt", "r");
+//     yylex();
+//     return 0;
+// }

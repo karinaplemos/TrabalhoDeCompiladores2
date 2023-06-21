@@ -3,6 +3,7 @@
     #include<stdlib.h>
     #include<string.h>
     #include<ctype.h>
+    extern FILE *yyin;
 
     void yyerror(const char *s);
     int yylex();
@@ -11,20 +12,24 @@
 
 %token INT FLOAT CHAR NUMBER FLOATNUMBER CHARACTER IDENTIFIER FOR WHILE IF ELSE ASSIGN EQ LT GT GTE LTE NEQ PLUS MINUS ASTERISK SLASH SEMICOLON COMMA OPENPARENTHESIS CLOSEPARENTHESIS OPENBRACKETS CLOSEBRACKETS 
 
+// Precedencia para resolver o conflito de shift/reduce do else
+%precedence NOELSE
+%precedence ELSE
+
 %%
 
 Program: FunctionList; 
 
 FunctionList:  
             Function FunctionList 
-|           
+|           Function 
 ;
 
 Function: Type IDENTIFIER OPENPARENTHESIS ArgList CLOSEPARENTHESIS CompoundStmt;
 
 ArgList: Arg ArgListLinha;
 
-ArgListLinha: COMMA  Arg ArgListLinha
+ArgListLinha: COMMA Arg ArgListLinha
 |             
 ;
 
@@ -58,10 +63,11 @@ OptExpr:    Expr
 
 WhileStmt: WHILE OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt;
 
-IfStmt: IF OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt ElsePart; 
+IfStmt: IF OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt ElsePart
+
 
 ElsePart:    ELSE Stmt                                 
-|            
+|            %prec NOELSE
 ;
 
 CompoundStmt: OPENBRACKETS StmtList CLOSEBRACKETS ;  
@@ -78,11 +84,9 @@ Expr: IDENTIFIER ASSIGN Expr
 | Rvalue
 ;
 
-Rvalue: Mag ;  
+Rvalue: Rvalue Compare Mag
+| Mag ;  
 
-RvalueLinha: Compare Mag RvalueLinha                 
-|              
-;
 
 Compare:    EQ                                         
 |           LT                                           
@@ -92,20 +96,15 @@ Compare:    EQ
 |           NEQ 
 ;  
 
-Mag:    Term 
+Mag:    Mag PLUS Term
+|       Mag MINUS Term
+|       Term
 ;
 
-MagLinha:   PLUS Term MagLinha                            
-|           MINUS Term MagLinha                            
-|           
+Term:   Term ASTERISK Factor 
+|       Term SLASH Factor
+|       Factor
 ; 
-
-Term:   Factor ; 
-
-TermLinha:  ASTERISK Factor TermLinha                        
-|           SLASH Factor TermLinha                        
-|           
-;  
 
 Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS                                    
 |       MINUS Factor                                     
@@ -119,6 +118,7 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS
 %%
 
 int main(){ 
+    yyin=fopen("entrada.txt", "r");
     yyparse();
     return 0;
 }
