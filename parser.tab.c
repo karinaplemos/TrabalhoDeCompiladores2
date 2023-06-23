@@ -73,13 +73,15 @@
     #include<stdlib.h>
     #include<string.h>
     #include<ctype.h>
+
+    #define YYDEBUG 1 // This is new
     extern FILE *yyin;
 
     void yyerror(const char *s);
     int yylex();
     int yywrap();
 
-#line 83 "parser.tab.c"
+#line 85 "parser.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -534,12 +536,12 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    21,    21,    24,    25,    28,    30,    32,    33,    36,
-      38,    40,    41,    42,    45,    46,    49,    50,    51,    52,
-      53,    54,    55,    58,    60,    61,    64,    66,    69,    70,
-      73,    75,    76,    79,    80,    83,    84,    87,    88,    91,
-      92,    93,    94,    95,    96,    99,   100,   101,   104,   105,
-     106,   109,   110,   111,   112,   113,   114,   115
+       0,    23,    23,    26,    27,    30,    32,    34,    35,    38,
+      40,    42,    43,    44,    47,    48,    51,    52,    53,    54,
+      55,    56,    57,    60,    62,    63,    66,    68,    71,    72,
+      75,    77,    78,    81,    82,    85,    86,    89,    90,    93,
+      94,    95,    96,    97,    98,   101,   102,   103,   106,   107,
+     108,   111,   112,   113,   114,   115,   116,   117
 };
 #endif
 
@@ -1178,7 +1180,7 @@ yyreduce:
   switch (yyn)
     {
 
-#line 1182 "parser.tab.c"
+#line 1184 "parser.tab.c"
 
       default: break;
     }
@@ -1372,12 +1374,17 @@ yyreturn:
   return yyresult;
 }
 
-#line 118 "parser.y"
+#line 120 "parser.y"
 
 
 int main(){ 
-    yyin=fopen("entrada.txt", "r");
-    yyparse();
+    //yydebug = 1; // This is new
+    yyin = fopen("entrada.txt", "r");
+
+    do
+    {
+        yyparse();
+    }while (!feof(yyin)); 
     return 0;
 }
 

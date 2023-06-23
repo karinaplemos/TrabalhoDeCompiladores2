@@ -1,4 +1,4 @@
-int main ()
+int main (int args)
 {
   float cos, x, n, term, eps, alt;
   char c;

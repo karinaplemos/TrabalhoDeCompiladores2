@@ -3,6 +3,8 @@
     #include<stdlib.h>
     #include<string.h>
     #include<ctype.h>
+
+    #define YYDEBUG 1
     extern FILE *yyin;
 
     void yyerror(const char *s);
@@ -118,8 +120,13 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS
 %%
 
 int main(){ 
-    yyin=fopen("entrada.txt", "r");
-    yyparse();
+    //yydebug = 1;
+    yyin = fopen("entrada.txt", "r");
+
+    do
+    {
+        yyparse();
+    }while (!feof(yyin)); 
     return 0;
 }
 
