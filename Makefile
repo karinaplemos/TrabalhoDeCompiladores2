@@ -13,3 +13,7 @@ win:
 
 scan:
 	.\scanner > saida.txt
+
+test:
+	gcc test_tree.c -o test_tree
+	.\test_tree
