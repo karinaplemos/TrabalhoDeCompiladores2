@@ -6,7 +6,7 @@
 typedef struct no{
     char *nome;
     int qtdFilhos; //Tamanho da lista de filhos
-    struct no   **filhos;
+    struct no  **filhos;
 
 } no;
 
@@ -32,22 +32,39 @@ no* addFilhos(no *no_, no **novosFilhos, int qtdFilhos){
     return no_;
 }
 
+void printaArvore(no *arvore, int cont){
+    char *nivel=malloc((cont-1)*sizeof(char));
+    memset(nivel,'|',cont);
+    printf("%.*s %s \n",cont,nivel,arvore->nome);
+    free(nivel);
+
+    for(int i=0; i < arvore->qtdFilhos; i++){
+        printaArvore(arvore->filhos[i], cont+1);
+    }
+}
+
 int main(){
     no *arvore, *filho, **filhos;
-
+    char *nivel;
 
     arvore = criaNo("Teste");
     filho = criaNo("Filho");
     filhos = malloc(sizeof(no *));
     filhos[0] = filho;
 
+    arvore = addFilhos(arvore, filhos, 1);
 
+    filho = criaNo("Filho2");
+    filhos[0] = filho;
     arvore = addFilhos(arvore, filhos, 1);
 
     printf("Hello Word!\n");
 
     printf("Pai: %s\n", arvore->nome);
     printf("Filho: %s\n", arvore->filhos[0]->nome);
+
+    printf("Arvore: \n");
+    printaArvore(arvore,1);
 
     return 0;
 }

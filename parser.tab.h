@@ -57,31 +57,31 @@ extern int yydebug;
     INT = 258,                     /* INT  */
     FLOAT = 259,                   /* FLOAT  */
     CHAR = 260,                    /* CHAR  */
-    NUMBER = 261,                  /* NUMBER  */
-    FLOATNUMBER = 262,             /* FLOATNUMBER  */
-    CHARACTER = 263,               /* CHARACTER  */
-    IDENTIFIER = 264,              /* IDENTIFIER  */
-    FOR = 265,                     /* FOR  */
-    WHILE = 266,                   /* WHILE  */
-    IF = 267,                      /* IF  */
-    ELSE = 268,                    /* ELSE  */
-    ASSIGN = 269,                  /* ASSIGN  */
-    EQ = 270,                      /* EQ  */
-    LT = 271,                      /* LT  */
-    GT = 272,                      /* GT  */
-    GTE = 273,                     /* GTE  */
-    LTE = 274,                     /* LTE  */
-    NEQ = 275,                     /* NEQ  */
-    PLUS = 276,                    /* PLUS  */
-    MINUS = 277,                   /* MINUS  */
-    ASTERISK = 278,                /* ASTERISK  */
-    SLASH = 279,                   /* SLASH  */
-    SEMICOLON = 280,               /* SEMICOLON  */
-    COMMA = 281,                   /* COMMA  */
-    OPENPARENTHESIS = 282,         /* OPENPARENTHESIS  */
-    CLOSEPARENTHESIS = 283,        /* CLOSEPARENTHESIS  */
-    OPENBRACKETS = 284,            /* OPENBRACKETS  */
-    CLOSEBRACKETS = 285,           /* CLOSEBRACKETS  */
+    IDENTIFIER = 261,              /* IDENTIFIER  */
+    FOR = 262,                     /* FOR  */
+    WHILE = 263,                   /* WHILE  */
+    IF = 264,                      /* IF  */
+    ELSE = 265,                    /* ELSE  */
+    ASSIGN = 266,                  /* ASSIGN  */
+    EQ = 267,                      /* EQ  */
+    LT = 268,                      /* LT  */
+    GT = 269,                      /* GT  */
+    GTE = 270,                     /* GTE  */
+    LTE = 271,                     /* LTE  */
+    NEQ = 272,                     /* NEQ  */
+    PLUS = 273,                    /* PLUS  */
+    MINUS = 274,                   /* MINUS  */
+    ASTERISK = 275,                /* ASTERISK  */
+    SLASH = 276,                   /* SLASH  */
+    SEMICOLON = 277,               /* SEMICOLON  */
+    COMMA = 278,                   /* COMMA  */
+    OPENPARENTHESIS = 279,         /* OPENPARENTHESIS  */
+    CLOSEPARENTHESIS = 280,        /* CLOSEPARENTHESIS  */
+    OPENBRACKETS = 281,            /* OPENBRACKETS  */
+    CLOSEBRACKETS = 282,           /* CLOSEBRACKETS  */
+    NUMBER = 283,                  /* NUMBER  */
+    FLOATNUMBER = 284,             /* FLOATNUMBER  */
+    CHARACTER = 285,               /* CHARACTER  */
     NOELSE = 286                   /* NOELSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
@@ -89,7 +89,24 @@ extern int yydebug;
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 31 "parser.y"
+ 
+    struct token1{
+        //char nome[20];
+        struct no *no_;
+    } tkn1;
+    struct token2{
+        //char nome[20];
+        struct no *no_;
+        //int tipo;
+    }tkn2;
+
+#line 107 "parser.tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
