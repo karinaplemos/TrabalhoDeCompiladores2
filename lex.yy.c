@@ -808,7 +808,7 @@ YY_RULE_SETUP
 case 10:
 YY_RULE_SETUP
 #line 22 "lex.l"
-{yylval.tkn2.valor = (char *) strdup(yytext); return NUMBER;} // usar função atoi para retornar o valor em formato de número
+{yylval.tkn2.valor = (char *) strdup(yytext); return NUMBER;}
 	YY_BREAK
 case 11:
 YY_RULE_SETUP

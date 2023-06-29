@@ -78,10 +78,10 @@ extern int yydebug;
     CLOSEPARENTHESIS = 279,        /* CLOSEPARENTHESIS  */
     OPENBRACKETS = 280,            /* OPENBRACKETS  */
     CLOSEBRACKETS = 281,           /* CLOSEBRACKETS  */
-    CHARACTER = 282,               /* CHARACTER  */
-    IDENTIFIER = 283,              /* IDENTIFIER  */
-    NUMBER = 284,                  /* NUMBER  */
-    FLOATNUMBER = 285,             /* FLOATNUMBER  */
+    NUMBER = 282,                  /* NUMBER  */
+    FLOATNUMBER = 283,             /* FLOATNUMBER  */
+    CHARACTER = 284,               /* CHARACTER  */
+    IDENTIFIER = 285,              /* IDENTIFIER  */
     NOELSE = 286                   /* NOELSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
@@ -91,7 +91,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 31 "parser.y"
+#line 32 "parser.y"
  
     struct token1{
         //char nome[20];

@@ -21,6 +21,7 @@
     no* criaNo(char *nome);
     no* addFilhos(no *no_, no **novosFilhos, int qtdFilhos);
     void printArvore(no *arvore);
+    no* criaArvoreIfGoto(char *tag, no* expr);
 
     // Variaveis da árvore
     no *raiz;
@@ -257,13 +258,11 @@ OptExpr:    Expr {$$.no_ = criaNo("OptExpr");
 ;
 
 WhileStmt: WHILE OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt {$$.no_ = criaNo("WhileStmt");
-                                                             filhos = malloc(5 * sizeof(no *));
-                                                             filhos[0] = criaNo("while");
-                                                             filhos[1] = criaNo("(");
-                                                             filhos[2] = $3.no_; 
-                                                             filhos[3] = criaNo(")");
-                                                             filhos[4] = $5.no_; 
-                                                             addFilhos($$.no_,filhos,5);
+                                                             filhos = malloc(3 * sizeof(no *));
+                                                             filhos[0] = criaNo("GotoTagX"); //Precisa generalizar a Tag
+                                                             filhos[1] = $5.no_; 
+                                                             filhos[2] = criaArvoreIfGoto("GotoTagX", $3.no_);
+                                                             addFilhos($$.no_,filhos,3);
                                                              free(filhos);
                                                             }
 
@@ -578,4 +577,25 @@ void printArvore_(no *arvore, int cont){
 
 void printArvore(no *arvore){
     printArvore_(arvore, 1);
+}
+
+no* criaArvoreIfGoto(char *tag, no* expr){
+    no* arvore = criaNo("IfStmt");
+    no **tempFilhos = malloc(5 * sizeof(no *));
+
+    tempFilhos[0] = criaNo("if");
+    tempFilhos[1] = criaNo("(");
+    tempFilhos[2] = expr;
+    tempFilhos[3] = criaNo(")");
+
+    char *gotoStr = malloc(50);
+    strcpy(gotoStr, "Goto ");
+    strcat(gotoStr, tag);
+    tempFilhos[4] = criaNo(gotoStr);
+    // Eu removi direto a parte do else, verificar se da algum problema
+
+    addFilhos(arvore,tempFilhos,5);
+    free(tempFilhos);
+
+    return arvore;
 }
