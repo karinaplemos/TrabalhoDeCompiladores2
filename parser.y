@@ -34,16 +34,19 @@
         struct no *no_;
     } tkn1;
     struct token2{
-        //char nome[20];
-        struct no *no_;
+        char *valor;
         //int tipo;
     }tkn2;
+    struct token3{
+        float valor;
+        //int tipo;
+    }tkn3;
 }
 
 
 
-%token <tkn1> INT FLOAT CHAR IDENTIFIER FOR WHILE IF ELSE ASSIGN EQ LT GT GTE LTE NEQ PLUS MINUS ASTERISK SLASH SEMICOLON COMMA OPENPARENTHESIS CLOSEPARENTHESIS OPENBRACKETS CLOSEBRACKETS 
-%token <tkn2> NUMBER FLOATNUMBER CHARACTER
+%token <tkn1> INT FLOAT CHAR FOR WHILE IF ELSE ASSIGN EQ LT GT GTE LTE NEQ PLUS MINUS ASTERISK SLASH SEMICOLON COMMA OPENPARENTHESIS CLOSEPARENTHESIS OPENBRACKETS CLOSEBRACKETS 
+%token <tkn2> NUMBER FLOATNUMBER CHARACTER IDENTIFIER
 %type  <tkn1> FunctionList Function Type ArgList Arg ArgListLinha Declaration IdentList Stmt ForStmt WhileStmt IfStmt CompoundStmt OptExpr Expr ElsePart StmtList StmtListLinha Rvalue Compare Mag Term Factor
 
 // Precedencia para resolver o conflito de shift/reduce do else
@@ -79,7 +82,7 @@ FunctionList:
 Function: Type IDENTIFIER OPENPARENTHESIS ArgList CLOSEPARENTHESIS CompoundStmt {$$.no_ = criaNo("Function");
                                                                                  filhos = malloc(6 * sizeof(no *));
                                                                                  filhos[0] = $1.no_; 
-                                                                                 filhos[1] = criaNo("IDENTIFIER");
+                                                                                 filhos[1] = criaNo($2.valor);
                                                                                  filhos[2] = criaNo("(");
                                                                                  filhos[3] = $4.no_;
                                                                                  filhos[4] = criaNo(")");
@@ -117,7 +120,7 @@ ArgListLinha: COMMA Arg ArgListLinha {$$.no_ = criaNo("ArgListLinha");
 Arg: Type IDENTIFIER {$$.no_ = criaNo("Arg");
                       filhos = malloc(2 * sizeof(no *));
                       filhos[0] = $1.no_;
-                      filhos[1] = criaNo("IDENTIFIER"); 
+                      filhos[1] = criaNo($2.valor); 
                       addFilhos($$.no_,filhos,2);
                       free(filhos);
                     }
@@ -135,21 +138,21 @@ Declaration: Type IdentList SEMICOLON{$$.no_ = criaNo("Declaration");
 
 Type:   INT {$$.no_ = criaNo("Type");
                filhos = malloc(1 * sizeof(no *));
-               filhos[0] = criaNo("INT"); 
+               filhos[0] = criaNo("int"); 
                addFilhos($$.no_,filhos,1);
                free(filhos);
             }          
 |       
     FLOAT {$$.no_ = criaNo("Type");
                filhos = malloc(1 * sizeof(no *));
-               filhos[0] = criaNo("FLOAT"); 
+               filhos[0] = criaNo("float"); 
                addFilhos($$.no_,filhos,1);
                free(filhos);
           }                                     
 |                   
     CHAR  {$$.no_ = criaNo("Type");
                filhos = malloc(1 * sizeof(no *));
-               filhos[0] =  criaNo("CHAR"); 
+               filhos[0] =  criaNo("char"); 
                addFilhos($$.no_,filhos,1);
                free(filhos);
           } 
@@ -157,7 +160,7 @@ Type:   INT {$$.no_ = criaNo("Type");
 
 IdentList: IDENTIFIER COMMA IdentList {$$.no_ = criaNo("IdentList");
                                        filhos = malloc(3 * sizeof(no *));
-                                       filhos[0] = criaNo("IDENTIFIER"); 
+                                       filhos[0] = criaNo($1.valor); 
                                        filhos[1] = criaNo(","); 
                                        filhos[2] = $3.no_; 
                                        addFilhos($$.no_,filhos,3);
@@ -166,7 +169,7 @@ IdentList: IDENTIFIER COMMA IdentList {$$.no_ = criaNo("IdentList");
 |         
     IDENTIFIER {$$.no_ = criaNo("IdentList");
                 filhos = malloc(1 * sizeof(no *));
-                filhos[0] = criaNo("IDENTIFIER"); 
+                filhos[0] = criaNo($1.valor); 
                 addFilhos($$.no_,filhos,1);
                 free(filhos);
             }
@@ -225,7 +228,7 @@ Stmt:   ForStmt {$$.no_ = criaNo("Stmt");
 
 ForStmt: FOR OPENPARENTHESIS Expr SEMICOLON OptExpr SEMICOLON OptExpr CLOSEPARENTHESIS Stmt {$$.no_ = criaNo("ForStmt");
                                                                                             filhos = malloc(9 * sizeof(no *));
-                                                                                            filhos[0] = criaNo("FOR"); 
+                                                                                            filhos[0] = criaNo("for"); 
                                                                                             filhos[1] = criaNo("(");
                                                                                             filhos[2] = $3.no_; 
                                                                                             filhos[3] = criaNo(";");
@@ -255,7 +258,7 @@ OptExpr:    Expr {$$.no_ = criaNo("OptExpr");
 
 WhileStmt: WHILE OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt {$$.no_ = criaNo("WhileStmt");
                                                              filhos = malloc(5 * sizeof(no *));
-                                                             filhos[0] = criaNo("WHILE");
+                                                             filhos[0] = criaNo("while");
                                                              filhos[1] = criaNo("(");
                                                              filhos[2] = $3.no_; 
                                                              filhos[3] = criaNo(")");
@@ -268,7 +271,7 @@ WhileStmt: WHILE OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt {$$.no_ = criaNo("Wh
 
 IfStmt: IF OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt ElsePart {$$.no_ = criaNo("IfStmt");
                                                              filhos = malloc(6 * sizeof(no *));
-                                                             filhos[0] = criaNo("IF");
+                                                             filhos[0] = criaNo("if");
                                                              filhos[1] = criaNo("(");
                                                              filhos[2] = $3.no_; 
                                                              filhos[3] = criaNo(")");
@@ -282,7 +285,7 @@ IfStmt: IF OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt ElsePart {$$.no_ = criaNo(
 
 ElsePart:    ELSE Stmt {$$.no_ = criaNo("ElsePart");
                         filhos = malloc(2 * sizeof(no *));
-                        filhos[0] = criaNo("ELSE");
+                        filhos[0] = criaNo("else");
                         filhos[1] = $2.no_; 
                         addFilhos($$.no_,filhos,2);
                         free(filhos);
@@ -297,9 +300,9 @@ ElsePart:    ELSE Stmt {$$.no_ = criaNo("ElsePart");
 
 CompoundStmt: OPENBRACKETS StmtList CLOSEBRACKETS { $$.no_ = criaNo("CompoundStmt");
                                                     filhos = malloc(3 * sizeof(no *));
-                                                    filhos[0] = criaNo("[");
+                                                    filhos[0] = criaNo("{");
                                                     filhos[1] = $2.no_;
-                                                    filhos[2] = criaNo("]");
+                                                    filhos[2] = criaNo("}");
                                                     addFilhos($$.no_,filhos,3);
                                                     free(filhos);
 }
@@ -338,7 +341,7 @@ StmtListLinha:  Stmt StmtListLinha {$$.no_ = criaNo("StmtListLinha");
 
 Expr: IDENTIFIER ASSIGN Expr {$$.no_ = criaNo("Expr");
                                     filhos = malloc(3 * sizeof(no *));
-                                    filhos[0] = criaNo("IDENTIFIER");
+                                    filhos[0] = criaNo($1.valor);
                                     filhos[1] = criaNo("=");
                                     filhos[2] = $3.no_;
                                     addFilhos($$.no_,filhos,3);
@@ -493,27 +496,27 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
 |       
         IDENTIFIER {$$.no_ = criaNo("Factor");
                     filhos = malloc(1 * sizeof(no *));
-                    filhos[0] = criaNo("IDENTIFIER");
+                    filhos[0] = criaNo($1.valor);
                     addFilhos($$.no_,filhos,1);
                     free(filhos);
                 }                                   
 |       
         NUMBER {$$.no_ = criaNo("Factor");
                 filhos = malloc(1 * sizeof(no *));
-                filhos[0] = criaNo("NUMBER");
+                filhos[0] = criaNo($1.valor);
                 addFilhos($$.no_,filhos,1);
                 free(filhos);}
 |       
         FLOATNUMBER {$$.no_ = criaNo("Factor");
                      filhos = malloc(1 * sizeof(no *));
-                     filhos[0] = criaNo("FLOATNUMBER");
+                     filhos[0] = criaNo($1.valor);
                      addFilhos($$.no_,filhos,1);
                      free(filhos);
                 }
 |       
         CHARACTER  {$$.no_ = criaNo("Factor");
                     filhos = malloc(1 * sizeof(no *));
-                    filhos[0] = criaNo("CHARACTER");
+                    filhos[0] = criaNo($1.valor);
                     addFilhos($$.no_,filhos,1);
                     free(filhos);
                 }     
@@ -531,7 +534,7 @@ int main(){
         yyparse();
     }while (!feof(yyin)); 
 
-    printf("\nArvore: \n");
+    printf("\nÁrvore: \n");
     printArvore(raiz);
     return 0;
 }

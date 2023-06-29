@@ -57,31 +57,31 @@ extern int yydebug;
     INT = 258,                     /* INT  */
     FLOAT = 259,                   /* FLOAT  */
     CHAR = 260,                    /* CHAR  */
-    IDENTIFIER = 261,              /* IDENTIFIER  */
-    FOR = 262,                     /* FOR  */
-    WHILE = 263,                   /* WHILE  */
-    IF = 264,                      /* IF  */
-    ELSE = 265,                    /* ELSE  */
-    ASSIGN = 266,                  /* ASSIGN  */
-    EQ = 267,                      /* EQ  */
-    LT = 268,                      /* LT  */
-    GT = 269,                      /* GT  */
-    GTE = 270,                     /* GTE  */
-    LTE = 271,                     /* LTE  */
-    NEQ = 272,                     /* NEQ  */
-    PLUS = 273,                    /* PLUS  */
-    MINUS = 274,                   /* MINUS  */
-    ASTERISK = 275,                /* ASTERISK  */
-    SLASH = 276,                   /* SLASH  */
-    SEMICOLON = 277,               /* SEMICOLON  */
-    COMMA = 278,                   /* COMMA  */
-    OPENPARENTHESIS = 279,         /* OPENPARENTHESIS  */
-    CLOSEPARENTHESIS = 280,        /* CLOSEPARENTHESIS  */
-    OPENBRACKETS = 281,            /* OPENBRACKETS  */
-    CLOSEBRACKETS = 282,           /* CLOSEBRACKETS  */
-    NUMBER = 283,                  /* NUMBER  */
-    FLOATNUMBER = 284,             /* FLOATNUMBER  */
-    CHARACTER = 285,               /* CHARACTER  */
+    FOR = 261,                     /* FOR  */
+    WHILE = 262,                   /* WHILE  */
+    IF = 263,                      /* IF  */
+    ELSE = 264,                    /* ELSE  */
+    ASSIGN = 265,                  /* ASSIGN  */
+    EQ = 266,                      /* EQ  */
+    LT = 267,                      /* LT  */
+    GT = 268,                      /* GT  */
+    GTE = 269,                     /* GTE  */
+    LTE = 270,                     /* LTE  */
+    NEQ = 271,                     /* NEQ  */
+    PLUS = 272,                    /* PLUS  */
+    MINUS = 273,                   /* MINUS  */
+    ASTERISK = 274,                /* ASTERISK  */
+    SLASH = 275,                   /* SLASH  */
+    SEMICOLON = 276,               /* SEMICOLON  */
+    COMMA = 277,                   /* COMMA  */
+    OPENPARENTHESIS = 278,         /* OPENPARENTHESIS  */
+    CLOSEPARENTHESIS = 279,        /* CLOSEPARENTHESIS  */
+    OPENBRACKETS = 280,            /* OPENBRACKETS  */
+    CLOSEBRACKETS = 281,           /* CLOSEBRACKETS  */
+    CHARACTER = 282,               /* CHARACTER  */
+    IDENTIFIER = 283,              /* IDENTIFIER  */
+    NUMBER = 284,                  /* NUMBER  */
+    FLOATNUMBER = 285,             /* FLOATNUMBER  */
     NOELSE = 286                   /* NOELSE  */
   };
   typedef enum yytokentype yytoken_kind_t;
@@ -98,12 +98,15 @@ union YYSTYPE
         struct no *no_;
     } tkn1;
     struct token2{
-        //char nome[20];
-        struct no *no_;
+        char *valor;
         //int tipo;
     }tkn2;
+    struct token3{
+        float valor;
+        //int tipo;
+    }tkn3;
 
-#line 107 "parser.tab.h"
+#line 110 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

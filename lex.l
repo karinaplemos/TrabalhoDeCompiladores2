@@ -1,5 +1,6 @@
 %{
     #include "stdio.h"
+    #include "stdlib.h"
     #include "parser.tab.h"
     int count=1;
 %}
@@ -16,10 +17,10 @@ digito[0-9]
 "while"                         {return WHILE;}
 "if"                            {return IF;}
 "else"                          {return ELSE;}
-['].[']                         {return CHARACTER;}
-{letra}({letra}|{digito})*      {return IDENTIFIER;}
-[-]?{digito}+                   {return NUMBER;} // usar função atoi para retornar o valor em formato de número
-[-]?{digito}*\.{digito}+        {return FLOATNUMBER;}  
+['].[']                         {yylval.tkn2.valor = (char *) strdup(yytext); return CHARACTER;}
+{letra}({letra}|{digito})*      {yylval.tkn2.valor = (char *) strdup(yytext); return IDENTIFIER;}
+[-]?{digito}+                   {yylval.tkn2.valor = (char *) strdup(yytext); return NUMBER;}
+[-]?{digito}*\.{digito}+        {yylval.tkn2.valor = (char *) strdup(yytext); return FLOATNUMBER;}  
 "+"                             {return PLUS;}
 "-"                             {return MINUS;}
 "*"                             {return ASTERISK;}
