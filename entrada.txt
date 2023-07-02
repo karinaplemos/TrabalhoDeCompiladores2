@@ -1,6 +1,6 @@
 int main (int args)
 {
-  float cos, x, n, term, eps, alt;
+  float cos, x, cos, eps, alt;
   char c;
 
   x = 3.14159;

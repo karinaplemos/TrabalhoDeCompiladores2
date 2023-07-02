@@ -481,7 +481,7 @@ char *yytext;
     #include "stdio.h"
     #include "stdlib.h"
     #include "parser.tab.h"
-    int count=1;
+    int LINHA=1;
 #line 485 "lex.yy.c"
 #line 486 "lex.yy.c"
 
@@ -904,7 +904,7 @@ case 29:
 /* rule 29 can match eol */
 YY_RULE_SETUP
 #line 41 "lex.l"
-{count++;}
+{LINHA++;}
 	YY_BREAK
 case 30:
 YY_RULE_SETUP
@@ -1923,8 +1923,3 @@ int yywrap(){
     
 }
 
-// int main(){
-//     yyin=fopen("entrada.txt", "r");
-//     yylex();
-//     return 0;
-// }

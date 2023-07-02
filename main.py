@@ -1,4 +1,4 @@
-from scannerrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrrr import Scanner
+from scanner import Scanner
 
 # Gera o Scanner 
 #scanner = open('scanner.py','r')
