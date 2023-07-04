@@ -1,0 +1,3 @@
+Linha 3: Identicador cos já declarado anteriormente
+Linha 9: Identicador n nao declarado anteriormente
+Linha 19: Identicador n nao declarado anteriormente

@@ -1,6 +1,6 @@
 int main (int args)
 {
-  float cos, x, n, term, eps, alt;
+  float cos, x, cos, term, eps, alt;
   char c;
 
   x = 3.14159;
@@ -19,3 +19,4 @@ int main (int args)
     n = n + 2;
   }
 }
+

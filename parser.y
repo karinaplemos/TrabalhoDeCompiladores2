@@ -3,9 +3,12 @@
     #include<stdlib.h>
     #include<string.h>
     #include<ctype.h>
+    #include "tabela_simbolos.h"
 
     #define YYDEBUG 1
     extern FILE *yyin;
+    extern int LINHA;
+
 
     void yyerror(const char *s);
     int yylex();
@@ -23,9 +26,33 @@
     void printArvore(no *arvore);
     no* criaArvoreIfGoto(char *tag, no* expr);
 
+    //Funções de erro semântico
+    void identificador_ja_declarado(char *identificador, int linha);
+    void identificador_nao_declarado(char *identificador, int linha);
+
     // Variaveis da árvore
     no *raiz;
     no **filhos;
+
+    int checa_declaracao_id(char *identificador){
+        simbolo_na_tabela *simb;
+        simb = get_simbolo_da_tabela(identificador);
+        if(simb == 0)
+            simb = put_simbolo_na_tabela(identificador);
+        else{
+            identificador_ja_declarado(identificador, LINHA);
+        }
+        return 0;
+    }   
+
+    int checa_contexto_id(char *identificador){
+        simbolo_na_tabela *simb;
+        simb = get_simbolo_da_tabela(identificador);
+        if(simb == 0){
+            identificador_nao_declarado(identificador, LINHA);
+        }
+        return 0;
+    }
 
 %}
 
@@ -89,7 +116,9 @@ Function: Type IDENTIFIER OPENPARENTHESIS ArgList CLOSEPARENTHESIS CompoundStmt 
                                                                                  filhos[4] = criaNo(")");
                                                                                  filhos[5] = $6.no_;
                                                                                  addFilhos($$.no_,filhos,6);
-                                                                                 free(filhos);                                                                                
+                                                                                 free(filhos);      
+
+                                                                                 checa_declaracao_id($2.valor);                                                                           
                                                                                 }
 ;
 
@@ -124,6 +153,8 @@ Arg: Type IDENTIFIER {$$.no_ = criaNo("Arg");
                       filhos[1] = criaNo($2.valor); 
                       addFilhos($$.no_,filhos,2);
                       free(filhos);
+
+                      checa_declaracao_id($2.valor);
                     }
 ;   
 
@@ -166,6 +197,8 @@ IdentList: IDENTIFIER COMMA IdentList {$$.no_ = criaNo("IdentList");
                                        filhos[2] = $3.no_; 
                                        addFilhos($$.no_,filhos,3);
                                        free(filhos);
+
+                                       checa_declaracao_id($1.valor);
                                     }
 |         
     IDENTIFIER {$$.no_ = criaNo("IdentList");
@@ -173,6 +206,8 @@ IdentList: IDENTIFIER COMMA IdentList {$$.no_ = criaNo("IdentList");
                 filhos[0] = criaNo($1.valor); 
                 addFilhos($$.no_,filhos,1);
                 free(filhos);
+
+                checa_declaracao_id($1.valor);
             }
 ;
 
@@ -345,6 +380,9 @@ Expr: IDENTIFIER ASSIGN Expr {$$.no_ = criaNo("Expr");
                                     filhos[2] = $3.no_;
                                     addFilhos($$.no_,filhos,3);
                                     free(filhos);
+
+                                    checa_contexto_id($1.valor);
+
                             }                     
 | 
     Rvalue {$$.no_ = criaNo("Expr");
@@ -599,3 +637,30 @@ no* criaArvoreIfGoto(char *tag, no* expr){
 
     return arvore;
 }
+
+void identificador_ja_declarado(char *identificador, int linha){    
+    FILE *arquivo;
+    arquivo = fopen("saida_erro_semantico.txt","a");
+    if (arquivo == NULL)
+    {
+        printf("ERRO! O arquivo nao foi aberto!\n");
+    }
+    else
+    {
+        fprintf(arquivo, "Linha %d: Identicador %s já declarado anteriormente\n", linha, identificador);
+    }
+}
+
+void identificador_nao_declarado(char *identificador, int linha){    
+    FILE *arquivo;
+    arquivo = fopen("saida_erro_semantico.txt","a");
+    if (arquivo == NULL)
+    {
+        printf("ERRO! O arquivo nao foi aberto!\n");
+    }
+    else
+    {
+        fprintf(arquivo, "Linha %d: Identicador %s nao declarado anteriormente\n", linha, identificador);
+    }
+}
+
