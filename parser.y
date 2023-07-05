@@ -522,7 +522,17 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
                     filhos[0] = criaNo($1.valor);
                     addFilhos($$.no_,filhos,1);
                     free(filhos);
-                }     
+                } 
+|   
+        IDENTIFIER OPENPARENTHESIS IdentList CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
+                                                                filhos = malloc(4 * sizeof(no *));
+                                                                filhos[0] = criaNo($1.valor);
+                                                                filhos[0] = criaNo("(");
+                                                                filhos[1] = $3.no_;
+                                                                filhos[2] = criaNo(")");
+                                                                addFilhos($$.no_,filhos,4);
+                                                                free(filhos);
+                                                            }  
 ;
 
 %%
