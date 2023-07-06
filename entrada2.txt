@@ -1,0 +1,12 @@
+int soma(int a, int b){
+    int soma;
+    soma = a + b;
+}
+
+int main ()
+{
+  int num1, num2, resultado;
+  num1 = 10;
+  num2 = 20;
+  resultado = soma(num1, num2);
+}

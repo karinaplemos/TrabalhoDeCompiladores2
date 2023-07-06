@@ -2,7 +2,7 @@
     #include "stdio.h"
     #include "stdlib.h"
     #include "parser.tab.h"
-    int count=1;
+    int LINHA=1;
 %}
 
 letra[a-zA-Z]
@@ -38,7 +38,7 @@ digito[0-9]
 ")"                             {return CLOSEPARENTHESIS;}
 "{"                             {return OPENBRACKETS;}
 "}"                             {return CLOSEBRACKETS;}
-\n                              {count++;}
+\n                              {LINHA++;}
 
 %%
 
