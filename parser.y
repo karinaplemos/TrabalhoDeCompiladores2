@@ -24,7 +24,10 @@
     no* criaNo(char *nome);
     no* addFilhos(no *no_, no **novosFilhos, int qtdFilhos);
     void printArvore(no *arvore);
-    no* criaArvoreIfGoto(char *tag, no* expr);
+    no* criaArvoreIfGotoWhile(char *tag, no* expr);
+    no* criaArvoreIfGotoFor(char *tag, no* expr, no* optExpr);
+
+    void geraLabel();
 
     //Funções de erro semântico
     void identificador_ja_declarado(char *identificador, int linha);
@@ -53,6 +56,9 @@
         }
         return 0;
     }
+    //Variavel GOTO
+    int labelCont = 0;
+    char *label;
 
 %}
 
@@ -263,17 +269,13 @@ Stmt:   ForStmt {$$.no_ = criaNo("Stmt");
 ;        
 
 ForStmt: FOR OPENPARENTHESIS Expr SEMICOLON OptExpr SEMICOLON OptExpr CLOSEPARENTHESIS Stmt {$$.no_ = criaNo("ForStmt");
-                                                                                            filhos = malloc(9 * sizeof(no *));
-                                                                                            filhos[0] = criaNo("for"); 
-                                                                                            filhos[1] = criaNo("(");
-                                                                                            filhos[2] = $3.no_; 
-                                                                                            filhos[3] = criaNo(";");
-                                                                                            filhos[4] = $5.no_; 
-                                                                                            filhos[5] = criaNo(";");
-                                                                                            filhos[6] = $7.no_; 
-                                                                                            filhos[7] = criaNo(")");
-                                                                                            filhos[8] = $9.no_; 
-                                                                                            addFilhos($$.no_,filhos,9);
+                                                                                            geraLabel();
+                                                                                            filhos = malloc(4 * sizeof(no *));
+                                                                                            filhos[0] = $3.no_; 
+                                                                                            filhos[1] = criaNo(label);
+                                                                                            filhos[2] = $9.no_; 
+                                                                                            filhos[3] = criaArvoreIfGotoFor(label, $5.no_, $7.no_);
+                                                                                            addFilhos($$.no_,filhos, 4);
                                                                                             free(filhos);
                                                                                         }
 ; 
@@ -293,10 +295,11 @@ OptExpr:    Expr {$$.no_ = criaNo("OptExpr");
 ;
 
 WhileStmt: WHILE OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt {$$.no_ = criaNo("WhileStmt");
+                                                             geraLabel();
                                                              filhos = malloc(3 * sizeof(no *));
-                                                             filhos[0] = criaNo("GotoTagX"); //Precisa generalizar a Tag
+                                                             filhos[0] = criaNo(label); //Precisa generalizar a Tag
                                                              filhos[1] = $5.no_; 
-                                                             filhos[2] = criaArvoreIfGoto("GotoTagX", $3.no_);
+                                                             filhos[2] = criaArvoreIfGotoWhile(label, $3.no_);
                                                              addFilhos($$.no_,filhos,3);
                                                              free(filhos);
                                                             }
@@ -556,13 +559,26 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
                     filhos[0] = criaNo($1.valor);
                     addFilhos($$.no_,filhos,1);
                     free(filhos);
-                }     
+                } 
+|   
+        IDENTIFIER OPENPARENTHESIS IdentList CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
+                                                                filhos = malloc(4 * sizeof(no *));
+                                                                filhos[0] = criaNo($1.valor);
+                                                                filhos[0] = criaNo("(");
+                                                                filhos[1] = $3.no_;
+                                                                filhos[2] = criaNo(")");
+                                                                addFilhos($$.no_,filhos,4);
+                                                                free(filhos);
+                                                            }  
 ;
 
 %%
 
 int main(){ 
     //yydebug = 1;
+
+
+    //geraLabel(gotoLabel, labelCont);
 
     yyin = fopen("entrada.txt", "r");
 
@@ -617,19 +633,23 @@ void printArvore(no *arvore){
     printArvore_(arvore, 1);
 }
 
-no* criaArvoreIfGoto(char *tag, no* expr){
+no* criaArvoreIfGotoWhile(char *tag, no* expr){
     no* arvore = criaNo("IfStmt");
     no **tempFilhos = malloc(5 * sizeof(no *));
+    no *tempNo;
+
+    char *gotoStr = malloc(50);
+    strcpy(gotoStr, "Goto ");
+    strcat(gotoStr, tag);
+    tempFilhos[0] = criaNo(gotoStr);
+
+    tempNo = criaNo("Stmt");
+    tempFilhos[4] = addFilhos(tempNo,tempFilhos, 1);// Stmt vai para a última posição da lista
 
     tempFilhos[0] = criaNo("if");
     tempFilhos[1] = criaNo("(");
     tempFilhos[2] = expr;
     tempFilhos[3] = criaNo(")");
-
-    char *gotoStr = malloc(50);
-    strcpy(gotoStr, "Goto ");
-    strcat(gotoStr, tag);
-    tempFilhos[4] = criaNo(gotoStr);
     // Eu removi direto a parte do else, verificar se da algum problema
 
     addFilhos(arvore,tempFilhos,5);
@@ -664,3 +684,61 @@ void identificador_nao_declarado(char *identificador, int linha){
     }
 }
 
+no* criaArvoreIfGotoFor(char *tag, no* expr, no* optExpr){
+    no* arvore = criaNo("IfStmt");
+    no* tempNo;
+    no **tempFilhos = malloc(5 * sizeof(no *));
+
+
+    // As árvores são criadas de baixo para cima para usar a mesma lista
+    char *gotoStr = malloc(50);
+    strcpy(gotoStr, "Goto ");
+    strcat(gotoStr, tag);
+    tempFilhos[0] = criaNo(gotoStr);
+
+    tempNo = criaNo("Stmt");
+    tempFilhos[0] = addFilhos(tempNo,tempFilhos, 1); //Nó Stmt vai para o início da lista
+
+    tempNo = criaNo("StmtListLinha");
+    tempFilhos[1] = addFilhos(tempNo,tempFilhos, 1); // StmtListLinha vai para a segunda posicao para liberar a primeira para outro nó Stmt
+
+    tempNo = criaNo("Stmt");
+    tempFilhos[0] = optExpr;
+    tempFilhos[0] = addFilhos(tempNo,tempFilhos, 1);
+
+    tempNo = criaNo("StmtList");
+    tempFilhos[1] = addFilhos(tempNo,tempFilhos, 2); // StmtList vai para a segunda posicao para liberar a primeira para outro nó {
+    tempFilhos[0] = criaNo("{");    
+    tempFilhos[2] = criaNo("}"); 
+
+    tempNo = criaNo("CompoundStmt");
+    tempFilhos[0] = addFilhos(tempNo,tempFilhos, 3);
+
+    tempNo = criaNo("Stmt");
+    tempFilhos[4] = addFilhos(tempNo,tempFilhos, 1);// Stmt vai para a última posição da lista
+
+
+    tempFilhos[0] = criaNo("if");
+    tempFilhos[1] = criaNo("(");
+    tempFilhos[2] = expr;
+    tempFilhos[3] = criaNo(")");
+    // Eu removi direto a parte do else, verificar se da algum problema
+
+    addFilhos(arvore,tempFilhos,5);
+    free(tempFilhos);
+
+    return arvore;
+}
+
+void geraLabel(){
+    labelCont++;
+    char *numStr = malloc(50);
+
+    label = malloc(50);
+    strcpy(label, "GotoLabel");
+
+    sprintf(numStr,"%d", labelCont);
+    strcat(label, numStr);
+
+    free(numStr);
+}
