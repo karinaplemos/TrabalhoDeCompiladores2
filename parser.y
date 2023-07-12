@@ -48,6 +48,29 @@
         return 0;
     }   
 
+    int adiciona_tipo_para_declaracao_id(char *identificador, int tipo){
+        simbolo_na_tabela *simb;
+        simb = get_simbolo_da_tabela(identificador);
+        if(simb == 0){
+            simb = put_simbolo_na_tabela(identificador);
+        }
+        simb->tipo = tipo;  
+
+        return 0;
+    }
+
+    int adiciona_tipo_identilist(no *no_, int tipo ){
+        // Adiciona o tipo no primeiro elemento
+        adiciona_tipo_para_declaracao_id(no_->filhos[0]->nome, tipo);
+
+        // Se não for raiz, entra em recursão
+        if(no_->qtdFilhos == 3){
+            adiciona_tipo_identilist(no_->filhos[2], tipo );
+        }
+
+        return 0;
+    }
+
     int checa_contexto_id(char *identificador){
         simbolo_na_tabela *simb;
         simb = get_simbolo_da_tabela(identificador);
@@ -72,8 +95,8 @@
         //int tipo;
     }tkn2;
     struct token3{
-        float valor;
-        //int tipo;
+        struct no *no_;
+        int tipo;
     }tkn3;
 }
 
@@ -81,7 +104,8 @@
 
 %token <tkn1> INT FLOAT CHAR FOR WHILE IF ELSE ASSIGN EQ LT GT GTE LTE NEQ PLUS MINUS ASTERISK SLASH SEMICOLON COMMA OPENPARENTHESIS CLOSEPARENTHESIS OPENBRACKETS CLOSEBRACKETS 
 %token <tkn2> NUMBER FLOATNUMBER CHARACTER IDENTIFIER
-%type  <tkn1> FunctionList Function Type ArgList Arg ArgListLinha Declaration IdentList Stmt ForStmt WhileStmt IfStmt CompoundStmt OptExpr Expr ElsePart StmtList StmtListLinha Rvalue Compare Mag Term Factor
+%type  <tkn1> FunctionList Function ArgList Arg ArgListLinha Declaration IdentList Stmt ForStmt WhileStmt IfStmt CompoundStmt OptExpr Expr ElsePart StmtList StmtListLinha Rvalue Compare Mag Term Factor
+%type  <tkn3> Type
 
 // Precedencia para resolver o conflito de shift/reduce do else
 %precedence NOELSE
@@ -124,7 +148,7 @@ Function: Type IDENTIFIER OPENPARENTHESIS ArgList CLOSEPARENTHESIS CompoundStmt 
                                                                                  addFilhos($$.no_,filhos,6);
                                                                                  free(filhos);      
 
-                                                                                 checa_declaracao_id($2.valor);                                                                           
+                                                                                 adiciona_tipo_para_declaracao_id($2.valor, $1.tipo);                       
                                                                                 }
 ;
 
@@ -160,7 +184,8 @@ Arg: Type IDENTIFIER {$$.no_ = criaNo("Arg");
                       addFilhos($$.no_,filhos,2);
                       free(filhos);
 
-                      checa_declaracao_id($2.valor);
+                      adiciona_tipo_para_declaracao_id($2.valor, $1.tipo);
+                      //checa_declaracao_id($2.valor);
                     }
 ;   
 
@@ -171,6 +196,9 @@ Declaration: Type IdentList SEMICOLON{$$.no_ = criaNo("Declaration");
                                       filhos[2] = criaNo(";"); 
                                       addFilhos($$.no_,filhos,3);
                                       free(filhos);
+
+                                      adiciona_tipo_identilist($2.no_, $1.tipo);
+
                                     }
 ;
 
@@ -179,6 +207,9 @@ Type:   INT {$$.no_ = criaNo("Type");
                filhos[0] = criaNo("int"); 
                addFilhos($$.no_,filhos,1);
                free(filhos);
+
+               // Tipo int possui valor 1
+               $$.tipo = 1;
             }          
 |       
     FLOAT {$$.no_ = criaNo("Type");
@@ -186,6 +217,9 @@ Type:   INT {$$.no_ = criaNo("Type");
                filhos[0] = criaNo("float"); 
                addFilhos($$.no_,filhos,1);
                free(filhos);
+
+               // Tipo float possui valor 2
+               $$.tipo = 2;
           }                                     
 |                   
     CHAR  {$$.no_ = criaNo("Type");
@@ -193,6 +227,9 @@ Type:   INT {$$.no_ = criaNo("Type");
                filhos[0] =  criaNo("char"); 
                addFilhos($$.no_,filhos,1);
                free(filhos);
+
+               // Tipo char possui valor 3
+               $$.tipo = 3;
           } 
 ;
 
@@ -578,14 +615,15 @@ int main(){
     //yydebug = 1;
 
 
-    //geraLabel(gotoLabel, labelCont);
-
     yyin = fopen("entrada.txt", "r");
 
     do
     {
         yyparse();
     }while (!feof(yyin)); 
+
+    printf("\nTabela:\n");
+    print_tabela();
 
     printf("\nÁrvore: \n");
     printArvore(raiz);

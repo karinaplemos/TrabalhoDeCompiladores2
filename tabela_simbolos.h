@@ -6,7 +6,8 @@
                                Tabela de símbolos
 -------------------------------------------------------------------------*/
 struct simbolo_na_tabela{
-    char *valor; 
+    char *valor;
+    int tipo;
     struct simbolo_na_tabela *proximo;
 };
 typedef struct simbolo_na_tabela simbolo_na_tabela;
@@ -33,4 +34,11 @@ simbolo_na_tabela * get_simbolo_da_tabela(char *simbolo)
         if (strcmp (ptr->valor,simbolo) == 0)
             return ptr;
     return 0;
+}
+
+void print_tabela()
+{
+    simbolo_na_tabela *ptr;
+    for (ptr = tabela_simbolos; ptr != (simbolo_na_tabela *) 0; ptr = (simbolo_na_tabela *) ptr->proximo)
+        printf("simbolo: %s, tipo: %d \n", ptr->valor, ptr->tipo);
 }

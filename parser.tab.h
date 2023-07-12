@@ -91,7 +91,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 65 "parser.y"
+#line 88 "parser.y"
  
     struct token1{
         //char nome[20];
@@ -102,8 +102,8 @@ union YYSTYPE
         //int tipo;
     }tkn2;
     struct token3{
-        float valor;
-        //int tipo;
+        struct no *no_;
+        int tipo;
     }tkn3;
 
 #line 110 "parser.tab.h"
