@@ -106,8 +106,10 @@
         }
         if((tipo1 == valChar && tipo2 != valChar) || (tipo1 != valChar && tipo2 == valChar)){
             // foi encontrado o erro
-            printf("Erro: operação inválida entre os tipos \"%s\" e \"%s\" na linha: %d\n",val_para_tipo(tipo1),val_para_tipo(tipo2), LINHA);
-
+            char *msg_erro = malloc(50);
+            sprintf(msg_erro, "Linha %d: operacao invalida entre os tipos \"%s\" e \"%s\"\n",LINHA, val_para_tipo(tipo1),val_para_tipo(tipo2));
+            yyerror(msg_erro);
+            free(msg_erro);
             return 0;
             
         }else{
@@ -117,8 +119,20 @@
 
         return 0;
     }
-    
 
+    void identificador_ja_declarado(char *identificador, int linha){    
+        char *msg_erro = malloc(50);
+        sprintf(msg_erro, "Linha %d: Identificador %s ja declarado anteriormente\n", linha, identificador);
+        yyerror(msg_erro);
+        free(msg_erro);
+    }
+
+    void identificador_nao_declarado(char *identificador, int linha){    
+        char *msg_erro = malloc(50);
+        sprintf(msg_erro, "Linha %d: Identicador %s nao declarado anteriormente\n", linha, identificador);
+        yyerror(msg_erro);
+        free(msg_erro);
+    }
 
     //Variavel GOTO
     int labelCont = 0;
@@ -762,7 +776,7 @@ int main(){
 }
 
 void yyerror(const char* msg) {
-    fprintf(stderr, "%s, na linha %d\n", msg, LINHA);
+    fprintf(stderr, "%s\n", msg);
 }
 
 no* criaNo(char *nome){
@@ -825,34 +839,6 @@ no* criaArvoreIfGotoWhile(char *tag, no* expr){
     free(tempFilhos);
 
     return arvore;
-}
-
-void identificador_ja_declarado(char *identificador, int linha){    
-    FILE *arquivo;
-    arquivo = fopen("saida_erro_semantico.txt","a");
-    if (arquivo == NULL)
-    {
-        printf("ERRO! O arquivo nao foi aberto!\n");
-    }
-    else
-    {
-        printf("Linha %d: Identicador %s já declarado anteriormente\n", linha, identificador);
-        fprintf(arquivo, "Linha %d: Identicador %s já declarado anteriormente\n", linha, identificador);
-    }
-}
-
-void identificador_nao_declarado(char *identificador, int linha){    
-    FILE *arquivo;
-    arquivo = fopen("saida_erro_semantico.txt","w");
-    if (arquivo == NULL)
-    {
-        printf("ERRO! O arquivo nao foi aberto!\n");
-    }
-    else
-    {   
-        printf("Linha %d: Identicador %s nao declarado anteriormente\n", linha, identificador);
-        fprintf(arquivo, "Linha %d: Identicador %s nao declarado anteriormente\n", linha, identificador);
-    }
 }
 
 no* criaArvoreIfGotoFor(char *tag, no* expr, no* optExpr){

@@ -91,7 +91,7 @@ extern int yydebug;
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 129 "parser.y"
+#line 143 "parser.y"
  
     struct token1{
         //char nome[20];
