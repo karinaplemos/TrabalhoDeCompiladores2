@@ -3,7 +3,7 @@ Trabalho referente à disciplina de Compiladores no semestre 2023.1.
 
 Alunas: Gabriela Pinheiro e Karina Lemos 
 
-## **Este trabalho necessita o uso do Bison3** 
+### **Este trabalho necessita o uso do Bison3** 
 
 ## Como rodar o lex e o bison:
  ### Linux/Mac:
