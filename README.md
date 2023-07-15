@@ -18,7 +18,7 @@ Caso contrário, é possível usar o comando anterior.
 ### Rodar somente o scanner (Depois de já ter sido gerado):
     make scan
 
-### Output 
+## Output 
 Em caso de erros a saída é uma mensagem de erro
   #### Erro léxico ou sintático:
   - sintax error
@@ -36,7 +36,7 @@ Em caso de erros a saída é uma mensagem de erro
 
 Em caso de nenhum erro a saída é uma árvore escrita no arquivo saida.txt.
 
-### Atuação de cada membro
+## Atuação de cada membro
 - [x] Scanner + parser bottom-up -> Karina e Gabriela
 
 - [x] Transformação de laços de repetição em desvios incondicionais (goto) -> Gabriela
