@@ -217,7 +217,13 @@ ArgList: Arg ArgListLinha{$$.no_ = criaNo("ArgList");
                           filhos[1] = $2.no_;
                           addFilhos($$.no_,filhos,2);
                           free(filhos);    
-}                    
+                        }             
+| {$$.no_ = criaNo("ArgList");
+    filhos = malloc(1 * sizeof(no *));
+    filhos[0] = criaNo("ε"); 
+    addFilhos($$.no_,filhos,1);
+    free(filhos);
+    }                            
 ;
 
 ArgListLinha: COMMA Arg ArgListLinha {$$.no_ = criaNo("ArgListLinha");
@@ -314,7 +320,7 @@ IdentList: IDENTIFIER COMMA IdentList {$$.no_ = criaNo("IdentList");
             }
 ;
 
-IdentListLinha: IDENTIFIER COMMA IdentListLinha {$$.no_ = criaNo("IdentList");
+IdentListLinha: IDENTIFIER COMMA IdentListLinha {$$.no_ = criaNo("IdentListLinha");
                                        filhos = malloc(3 * sizeof(no *));
                                        filhos[0] = criaNo($1.valor); 
                                        filhos[1] = criaNo(","); 
@@ -326,7 +332,7 @@ IdentListLinha: IDENTIFIER COMMA IdentListLinha {$$.no_ = criaNo("IdentList");
                                        //checa_declaracao_id($1.valor);
                                     }
 |         
-    IDENTIFIER {$$.no_ = criaNo("IdentList");
+    IDENTIFIER {$$.no_ = criaNo("IdentListLinha");
                 filhos = malloc(1 * sizeof(no *));
                 filhos[0] = criaNo($1.valor); 
                 addFilhos($$.no_,filhos,1);
@@ -335,6 +341,12 @@ IdentListLinha: IDENTIFIER COMMA IdentListLinha {$$.no_ = criaNo("IdentList");
                 checa_contexto_id($1.valor);
                 //checa_declaracao_id($1.valor);
             }
+|   {$$.no_ = criaNo("IdentListLinha");
+    filhos = malloc(1 * sizeof(no *));
+    filhos[0] = criaNo("ε"); 
+    addFilhos($$.no_,filhos,1);
+    free(filhos);
+    }  
 ;
 
 Stmt:   ForStmt {$$.no_ = criaNo("Stmt");
