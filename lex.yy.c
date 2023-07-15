@@ -1923,8 +1923,3 @@ int yywrap(){
     
 }
 
-// int main(){
-//     yyin=fopen("entrada.txt", "r");
-//     yylex();
-//     return 0;
-// }

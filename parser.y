@@ -142,12 +142,10 @@
 
 %union { 
     struct token1{
-        //char nome[20];
         struct no *no_;
     } tkn1;
     struct token2{
         char *valor;
-        //int tipo;
     }tkn2;
     struct token3{
         struct no *no_;
@@ -339,7 +337,6 @@ IdentListLinha: IDENTIFIER COMMA IdentListLinha {$$.no_ = criaNo("IdentListLinha
                 free(filhos);
 
                 checa_contexto_id($1.valor);
-                //checa_declaracao_id($1.valor);
             }
 |   {$$.no_ = criaNo("IdentListLinha");
     filhos = malloc(1 * sizeof(no *));
@@ -768,21 +765,20 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
 
 int main(){ 
     //yydebug = 1;
+    yyin = fopen("Exemplos/entrada_sem_erros.txt", "r");
+    //yyin = fopen("Exemplos/entrada_com_erro_lexico.txt", "r");
+    //yyin = fopen("Exemplos/entrada_com_erro_sintatico.txt", "r");
+    //yyin = fopen("Exemplos/entrada_com_erro_semantico.txt", "r");
 
-
-    yyin = fopen("entrada.txt", "r");
-    printf("");
     do
     {
         yyparse();
     }while (!feof(yyin)); 
 
-    
+    /*printf("\nTabela de símbolos:\n");
+    print_tabela();*/
 
-    printf("\nTabela:\n");
-    print_tabela();
-
-    printf("\nÁrvore: \n");
+    printf("Arvore: \n");
     printArvore(raiz);
     return 0;
 }

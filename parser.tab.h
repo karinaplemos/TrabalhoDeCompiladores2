@@ -94,19 +94,17 @@ union YYSTYPE
 #line 143 "parser.y"
  
     struct token1{
-        //char nome[20];
         struct no *no_;
     } tkn1;
     struct token2{
         char *valor;
-        //int tipo;
     }tkn2;
     struct token3{
         struct no *no_;
         int tipo;
     }tkn3;
 
-#line 110 "parser.tab.h"
+#line 108 "parser.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -2,9 +2,6 @@
 #include<stdlib.h>
 #include<string.h>
 
-/*-------------------------------------------------------------------------
-                               Tabela de símbolos
--------------------------------------------------------------------------*/
 struct simbolo_na_tabela{
     char *valor;
     int tipo;
@@ -15,7 +12,7 @@ typedef struct simbolo_na_tabela simbolo_na_tabela;
 //Cadeia de simbolos
 simbolo_na_tabela *tabela_simbolos = (simbolo_na_tabela *)0;
 
-//posicao com as funcoes
+//posição com as funções
 simbolo_na_tabela *posicao_func  = (simbolo_na_tabela *)0;
 
 //Operações existentes na tabela
@@ -60,13 +57,10 @@ simbolo_na_tabela * reseta_tabela(int index){
     simbolo_na_tabela *ptr;
     ptr = tabela_simbolos;
 
-    
     if(ptr->proximo != posicao_func){
         limpa_tabela(ptr->proximo);
     }
     
-    
-
     ptr->proximo = posicao_func;
     posicao_func = ptr;
     printf("\n");
