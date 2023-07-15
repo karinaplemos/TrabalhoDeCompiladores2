@@ -1,6 +1,11 @@
+int func(int arg){
+  int x;
+  x = 0;
+}
+
 int main (int args)
 {
-  float cos, x, cos, term, eps, alt;
+  float x, cos, term, eps, alt;
   char c;
 
   x = 3.14159;
@@ -9,14 +14,27 @@ int main (int args)
   n = 1;
   cos = 1;
   term = 1;
-  alt = -1;
-  
-  while (term>eps)
-  {
-    term = term * x * x / n / (n+1);
-    cos = cos + alt * term;
-    alt = -alt;
-    n = n + 2;
+  alt = 'c' + 1;
+
+  if (x > 0){
+    x = x + 1;
+    y = func(args);
   }
+  
+  for (x = 0; term > eps; x = 1)
+  {
+    term = term * x;
+  }
+
+  for (x = 0; term > eps; x = 1)
+  {
+    term = term * x;
+  }
+
+  for (x = 0; term > eps; x = 1)
+  {
+    term = term * x;
+  }
+
 }
 

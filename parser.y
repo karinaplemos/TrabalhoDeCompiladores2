@@ -9,6 +9,12 @@
     extern FILE *yyin;
     extern int LINHA;
 
+    int qtdFuncoes = 0;
+
+    int valInt = 1;
+    int valFloat = 2;
+    int valChar = 3;
+
 
     void yyerror(const char *s);
     int yylex();
@@ -79,6 +85,41 @@
         }
         return 0;
     }
+
+    char* val_para_tipo(int tipo){
+        if(tipo == valInt){
+            return "int";
+        }else if(tipo == valFloat){
+            return "float";
+        }else if(tipo == valChar){
+            return "char";
+        }
+
+        return "erro";
+    }
+
+    int checa_tipos(int tipo1, int tipo2){
+
+        if(tipo1 == 0 || tipo2 == 0 ){
+            //Algum erro já teria sido notificado anteriormente
+            return 0;
+        }
+        if((tipo1 == valChar && tipo2 != valChar) || (tipo1 != valChar && tipo2 == valChar)){
+            // foi encontrado o erro
+            printf("Erro: operação inválida entre os tipos \"%s\" e \"%s\" na linha: %d\n",val_para_tipo(tipo1),val_para_tipo(tipo2), LINHA);
+
+            return 0;
+            
+        }else{
+            // não possui erro e um dos tipos é retornado
+            return tipo1;
+        }
+
+        return 0;
+    }
+    
+
+
     //Variavel GOTO
     int labelCont = 0;
     char *label;
@@ -104,8 +145,8 @@
 
 %token <tkn1> INT FLOAT CHAR FOR WHILE IF ELSE ASSIGN EQ LT GT GTE LTE NEQ PLUS MINUS ASTERISK SLASH SEMICOLON COMMA OPENPARENTHESIS CLOSEPARENTHESIS OPENBRACKETS CLOSEBRACKETS 
 %token <tkn2> NUMBER FLOATNUMBER CHARACTER IDENTIFIER
-%type  <tkn1> FunctionList Function ArgList Arg ArgListLinha Declaration IdentList Stmt ForStmt WhileStmt IfStmt CompoundStmt OptExpr Expr ElsePart StmtList StmtListLinha Rvalue Compare Mag Term Factor
-%type  <tkn3> Type
+%type  <tkn1> FunctionList Function ArgList Arg ArgListLinha Declaration IdentList IdentListLinha Stmt ForStmt WhileStmt IfStmt CompoundStmt OptExpr ElsePart StmtList StmtListLinha Rvalue Compare 
+%type  <tkn3> Type Mag Term Factor Expr
 
 // Precedencia para resolver o conflito de shift/reduce do else
 %precedence NOELSE
@@ -127,7 +168,7 @@ FunctionList:
                                    filhos[0] = $1.no_; 
                                    filhos[1] = $2.no_;
                                    addFilhos($$.no_,filhos,2);
-                                   free(filhos);
+                                   free(filhos);                         
                                    } 
 |           Function {$$.no_ = criaNo("FunctionList");
                                    filhos = malloc(sizeof(no *));
@@ -148,7 +189,11 @@ Function: Type IDENTIFIER OPENPARENTHESIS ArgList CLOSEPARENTHESIS CompoundStmt 
                                                                                  addFilhos($$.no_,filhos,6);
                                                                                  free(filhos);      
 
-                                                                                 adiciona_tipo_para_declaracao_id($2.valor, $1.tipo);                       
+                                                                                checa_declaracao_id($2.valor);
+                                                                                adiciona_tipo_para_declaracao_id($2.valor, $1.tipo);    
+
+                                                                                qtdFuncoes++;
+                                                                                reseta_tabela(qtdFuncoes);                   
                                                                                 }
 ;
 
@@ -184,8 +229,9 @@ Arg: Type IDENTIFIER {$$.no_ = criaNo("Arg");
                       addFilhos($$.no_,filhos,2);
                       free(filhos);
 
+                      checa_declaracao_id($2.valor);
                       adiciona_tipo_para_declaracao_id($2.valor, $1.tipo);
-                      //checa_declaracao_id($2.valor);
+                      
                     }
 ;   
 
@@ -209,7 +255,7 @@ Type:   INT {$$.no_ = criaNo("Type");
                free(filhos);
 
                // Tipo int possui valor 1
-               $$.tipo = 1;
+               $$.tipo = valInt;
             }          
 |       
     FLOAT {$$.no_ = criaNo("Type");
@@ -219,7 +265,7 @@ Type:   INT {$$.no_ = criaNo("Type");
                free(filhos);
 
                // Tipo float possui valor 2
-               $$.tipo = 2;
+               $$.tipo = valFloat;
           }                                     
 |                   
     CHAR  {$$.no_ = criaNo("Type");
@@ -229,7 +275,7 @@ Type:   INT {$$.no_ = criaNo("Type");
                free(filhos);
 
                // Tipo char possui valor 3
-               $$.tipo = 3;
+               $$.tipo = valChar;
           } 
 ;
 
@@ -251,6 +297,29 @@ IdentList: IDENTIFIER COMMA IdentList {$$.no_ = criaNo("IdentList");
                 free(filhos);
 
                 checa_declaracao_id($1.valor);
+            }
+;
+
+IdentListLinha: IDENTIFIER COMMA IdentListLinha {$$.no_ = criaNo("IdentList");
+                                       filhos = malloc(3 * sizeof(no *));
+                                       filhos[0] = criaNo($1.valor); 
+                                       filhos[1] = criaNo(","); 
+                                       filhos[2] = $3.no_; 
+                                       addFilhos($$.no_,filhos,3);
+                                       free(filhos);
+
+                                       checa_contexto_id($1.valor);
+                                       //checa_declaracao_id($1.valor);
+                                    }
+|         
+    IDENTIFIER {$$.no_ = criaNo("IdentList");
+                filhos = malloc(1 * sizeof(no *));
+                filhos[0] = criaNo($1.valor); 
+                addFilhos($$.no_,filhos,1);
+                free(filhos);
+
+                checa_contexto_id($1.valor);
+                //checa_declaracao_id($1.valor);
             }
 ;
 
@@ -423,6 +492,13 @@ Expr: IDENTIFIER ASSIGN Expr {$$.no_ = criaNo("Expr");
 
                                     checa_contexto_id($1.valor);
 
+                                    simbolo_na_tabela *identificador;
+                                    identificador = get_simbolo_da_tabela($1.valor);
+                                    if(identificador == 0){
+                                        $$.tipo = 0;
+                                    }else{
+                                        $$.tipo = identificador->tipo;
+                                    }
                             }                     
 | 
     Rvalue {$$.no_ = criaNo("Expr");
@@ -430,6 +506,9 @@ Expr: IDENTIFIER ASSIGN Expr {$$.no_ = criaNo("Expr");
           filhos[0] = $1.no_;
           addFilhos($$.no_,filhos,1);
           free(filhos);
+
+          // boleanos serao tratados como inteiros, como em C
+          $$.tipo = valInt;
         }
 ;
 
@@ -501,6 +580,8 @@ Mag:    Mag PLUS Term {$$.no_ = criaNo("Mag");
                        filhos[2] = $3.no_;
                        addFilhos($$.no_,filhos,3);
                        free(filhos);
+
+                       $$.tipo = checa_tipos($1.tipo, $3.tipo);
                     }
 |       
         Mag MINUS Term {$$.no_ = criaNo("Mag");
@@ -510,6 +591,8 @@ Mag:    Mag PLUS Term {$$.no_ = criaNo("Mag");
                         filhos[2] = $3.no_;
                         addFilhos($$.no_,filhos,3);
                         free(filhos);
+
+                        $$.tipo = checa_tipos($1.tipo, $3.tipo);
                     }
 |       
         Term {$$.no_ = criaNo("Mag");
@@ -517,6 +600,8 @@ Mag:    Mag PLUS Term {$$.no_ = criaNo("Mag");
               filhos[0] = $1.no_;
               addFilhos($$.no_,filhos,1);
               free(filhos);
+
+              $$.tipo = $1.tipo;
             }
 ;
 
@@ -527,6 +612,8 @@ Term:   Term ASTERISK Factor {$$.no_ = criaNo("Term");
                               filhos[2] = $3.no_;
                               addFilhos($$.no_,filhos,3);
                               free(filhos);
+
+                              $$.tipo = checa_tipos($1.tipo, $3.tipo);
                             }
 |       
         Term SLASH Factor {$$.no_ = criaNo("Term");
@@ -536,6 +623,8 @@ Term:   Term ASTERISK Factor {$$.no_ = criaNo("Term");
                            filhos[2] = $3.no_;
                            addFilhos($$.no_,filhos,3);
                            free(filhos);
+
+                           $$.tipo = checa_tipos($1.tipo, $3.tipo);
                         }
 |       
         Factor {$$.no_ = criaNo("Term");
@@ -543,6 +632,8 @@ Term:   Term ASTERISK Factor {$$.no_ = criaNo("Term");
                 filhos[0] = $1.no_;
                 addFilhos($$.no_,filhos,1);
                 free(filhos);
+
+                $$.tipo = $1.tipo;
             } 
 ; 
 
@@ -553,6 +644,8 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
                                                 filhos[2] = criaNo(")");
                                                 addFilhos($$.no_,filhos,3);
                                                 free(filhos);
+
+                                                $$.tipo = $2.tipo;
                                             }                                  
 |       
         MINUS Factor {$$.no_ = criaNo("Factor");
@@ -561,6 +654,8 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
                       filhos[1] = $2.no_;
                       addFilhos($$.no_,filhos,2);
                       free(filhos);
+
+                      $$.tipo = $2.tipo;
                 }                                     
 |       
         PLUS Factor {$$.no_ = criaNo("Factor");
@@ -569,6 +664,8 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
                      filhos[1] = $2.no_;
                      addFilhos($$.no_,filhos,2);
                      free(filhos);
+
+                     $$.tipo = $2.tipo;
                 }                                     
 |       
         IDENTIFIER {$$.no_ = criaNo("Factor");
@@ -576,19 +673,37 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
                     filhos[0] = criaNo($1.valor);
                     addFilhos($$.no_,filhos,1);
                     free(filhos);
+
+                    simbolo_na_tabela *identificador;
+                    identificador = get_simbolo_da_tabela($1.valor);
+                    if(identificador == 0){
+                        $$.tipo = 0;
+                    }else{
+                        $$.tipo = identificador->tipo;
+                    }
+
+                    checa_contexto_id($1.valor);
+                    
                 }                                   
 |       
         NUMBER {$$.no_ = criaNo("Factor");
                 filhos = malloc(1 * sizeof(no *));
                 filhos[0] = criaNo($1.valor);
                 addFilhos($$.no_,filhos,1);
-                free(filhos);}
+                free(filhos);
+                
+                $$.tipo = valInt;
+                }
+
+                
 |       
         FLOATNUMBER {$$.no_ = criaNo("Factor");
                      filhos = malloc(1 * sizeof(no *));
                      filhos[0] = criaNo($1.valor);
                      addFilhos($$.no_,filhos,1);
                      free(filhos);
+
+                     $$.tipo = valInt;
                 }
 |       
         CHARACTER  {$$.no_ = criaNo("Factor");
@@ -596,9 +711,11 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
                     filhos[0] = criaNo($1.valor);
                     addFilhos($$.no_,filhos,1);
                     free(filhos);
+
+                    $$.tipo = valChar;
                 } 
 |   
-        IDENTIFIER OPENPARENTHESIS IdentList CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
+        IDENTIFIER OPENPARENTHESIS IdentListLinha CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
                                                                 filhos = malloc(4 * sizeof(no *));
                                                                 filhos[0] = criaNo($1.valor);
                                                                 filhos[0] = criaNo("(");
@@ -606,6 +723,18 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
                                                                 filhos[2] = criaNo(")");
                                                                 addFilhos($$.no_,filhos,4);
                                                                 free(filhos);
+
+                                                                checa_contexto_id($1.valor); 
+
+                                                                simbolo_na_tabela *identificador;
+                                                                identificador = get_simbolo_da_tabela($1.valor);
+                                                                if(identificador == 0){
+                                                                    $$.tipo = 0;
+                                                                }else{
+                                                                    $$.tipo = identificador->tipo;
+                                                                }
+
+                                                                
                                                             }  
 ;
 
@@ -616,11 +745,13 @@ int main(){
 
 
     yyin = fopen("entrada.txt", "r");
-
+    printf("");
     do
     {
         yyparse();
     }while (!feof(yyin)); 
+
+    
 
     printf("\nTabela:\n");
     print_tabela();
@@ -631,7 +762,7 @@ int main(){
 }
 
 void yyerror(const char* msg) {
-    fprintf(stderr, "%s\n", msg);
+    fprintf(stderr, "%s, na linha %d\n", msg, LINHA);
 }
 
 no* criaNo(char *nome){
@@ -705,19 +836,21 @@ void identificador_ja_declarado(char *identificador, int linha){
     }
     else
     {
+        printf("Linha %d: Identicador %s já declarado anteriormente\n", linha, identificador);
         fprintf(arquivo, "Linha %d: Identicador %s já declarado anteriormente\n", linha, identificador);
     }
 }
 
 void identificador_nao_declarado(char *identificador, int linha){    
     FILE *arquivo;
-    arquivo = fopen("saida_erro_semantico.txt","a");
+    arquivo = fopen("saida_erro_semantico.txt","w");
     if (arquivo == NULL)
     {
         printf("ERRO! O arquivo nao foi aberto!\n");
     }
     else
-    {
+    {   
+        printf("Linha %d: Identicador %s nao declarado anteriormente\n", linha, identificador);
         fprintf(arquivo, "Linha %d: Identicador %s nao declarado anteriormente\n", linha, identificador);
     }
 }

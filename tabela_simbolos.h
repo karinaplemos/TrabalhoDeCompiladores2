@@ -15,6 +15,9 @@ typedef struct simbolo_na_tabela simbolo_na_tabela;
 //Cadeia de simbolos
 simbolo_na_tabela *tabela_simbolos = (simbolo_na_tabela *)0;
 
+//posicao com as funcoes
+simbolo_na_tabela *posicao_func  = (simbolo_na_tabela *)0;
+
 //Operações existentes na tabela
 simbolo_na_tabela * put_simbolo_na_tabela(char *simbolo)
 {
@@ -42,3 +45,31 @@ void print_tabela()
     for (ptr = tabela_simbolos; ptr != (simbolo_na_tabela *) 0; ptr = (simbolo_na_tabela *) ptr->proximo)
         printf("simbolo: %s, tipo: %d \n", ptr->valor, ptr->tipo);
 }
+
+void limpa_tabela(simbolo_na_tabela * ptr){
+    if(ptr->proximo != posicao_func){
+        limpa_tabela(ptr->proximo);
+    }
+
+    free(ptr->valor);
+    free(ptr);
+}
+
+simbolo_na_tabela * reseta_tabela(int index){
+    //print_tabela();
+    simbolo_na_tabela *ptr;
+    ptr = tabela_simbolos;
+
+    
+    if(ptr->proximo != posicao_func){
+        limpa_tabela(ptr->proximo);
+    }
+    
+    
+
+    ptr->proximo = posicao_func;
+    posicao_func = ptr;
+    printf("\n");
+    //print_tabela();
+}
+
