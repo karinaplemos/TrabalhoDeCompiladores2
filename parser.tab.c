@@ -106,8 +106,8 @@
     void geraLabel();
 
     //Funções de erro semântico
-    void identificador_ja_declarado(char *identificador, int linha);
-    void identificador_nao_declarado(char *identificador, int linha);
+    void identificador_ja_declarado(char *identificador);
+    void identificador_nao_declarado(char *identificador);
 
     // Variaveis da árvore
     no *raiz;
@@ -119,7 +119,7 @@
         if(simb == 0)
             simb = put_simbolo_na_tabela(identificador);
         else{
-            identificador_ja_declarado(identificador, LINHA);
+            identificador_ja_declarado(identificador);
         }
         return 0;
     }   
@@ -147,11 +147,11 @@
         return 0;
     }
 
-    int checa_contexto_id(char *identificador){
+    int checa_variavel_existe(char *identificador){
         simbolo_na_tabela *simb;
         simb = get_simbolo_da_tabela(identificador);
         if(simb == 0){
-            identificador_nao_declarado(identificador, LINHA);
+            identificador_nao_declarado(identificador);
         }
         return 0;
     }
@@ -177,7 +177,7 @@
         if((tipo1 == valChar && tipo2 != valChar) || (tipo1 != valChar && tipo2 == valChar)){
             // foi encontrado o erro
             char *msg_erro = malloc(50);
-            sprintf(msg_erro, "Linha %d: operacao invalida entre os tipos \"%s\" e \"%s\"\n",LINHA, val_para_tipo(tipo1),val_para_tipo(tipo2));
+            sprintf(msg_erro, "Operacao invalida entre os tipos \"%s\" e \"%s\"\n", val_para_tipo(tipo1),val_para_tipo(tipo2));
             yyerror(msg_erro);
             free(msg_erro);
             return 0;
@@ -190,16 +190,16 @@
         return 0;
     }
 
-    void identificador_ja_declarado(char *identificador, int linha){    
+    void identificador_ja_declarado(char *identificador){    
         char *msg_erro = malloc(50);
-        sprintf(msg_erro, "Linha %d: Identificador %s ja declarado anteriormente\n", linha, identificador);
+        sprintf(msg_erro, "Identificador %s ja declarado anteriormente\n", identificador);
         yyerror(msg_erro);
         free(msg_erro);
     }
 
-    void identificador_nao_declarado(char *identificador, int linha){    
+    void identificador_nao_declarado(char *identificador){    
         char *msg_erro = malloc(50);
-        sprintf(msg_erro, "Linha %d: Identicador %s nao declarado anteriormente\n", linha, identificador);
+        sprintf(msg_erro, "Identicador %s nao declarado anteriormente\n", identificador);
         yyerror(msg_erro);
         free(msg_erro);
     }
@@ -665,13 +665,13 @@ static const yytype_int8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int16 yyrline[] =
 {
-       0,   169,   169,   178,   185,   193,   212,   219,   227,   235,
-     243,   256,   269,   279,   289,   300,   311,   321,   333,   341,
-     349,   356,   363,   371,   378,   385,   392,   400,   412,   418,
-     426,   438,   452,   459,   467,   478,   485,   493,   500,   508,
-     527,   538,   547,   556,   563,   570,   577,   584,   591,   599,
-     610,   621,   631,   642,   653,   663,   674,   684,   694,   712,
-     723,   732,   741
+       0,   169,   169,   178,   185,   193,   214,   221,   229,   237,
+     245,   258,   271,   280,   289,   299,   310,   320,   331,   339,
+     347,   354,   361,   369,   376,   383,   390,   398,   410,   416,
+     424,   436,   450,   457,   465,   476,   483,   491,   498,   506,
+     526,   536,   547,   558,   565,   572,   579,   586,   593,   601,
+     612,   623,   633,   644,   655,   665,   676,   686,   696,   714,
+     725,   734,   743
 };
 #endif
 
@@ -1318,10 +1318,10 @@ yyreduce:
     {
   case 2: /* Program: FunctionList  */
 #line 169 "parser.y"
-                     {raiz = criaNo("Program"); 
-                      filhos = malloc(sizeof(no *));
+                     {raiz = criaNo("Program"); //Atualiza a raiz da árvore a ser impressa
+                      filhos = malloc(sizeof(no *)); //Cria a lista de filhos do nó atual
                       filhos[0] = (yyvsp[0].tkn1).no_; 
-                      raiz = addFilhos(raiz,filhos, 1);
+                      raiz = addFilhos(raiz,filhos, 1); // Adiciona os filhos ao nó atual
                       free(filhos);
                     }
 #line 1328 "parser.tab.c"
@@ -1363,17 +1363,19 @@ yyreduce:
                                                                                  addFilhos((yyval.tkn1).no_,filhos,6);
                                                                                  free(filhos);      
 
+                                                                                // verifica se o identificador já foi declarado
                                                                                 checa_declaracao_id((yyvsp[-4].tkn2).valor);
+                                                                                // Adiciona o tipo para o identificador da função
                                                                                 adiciona_tipo_para_declaracao_id((yyvsp[-4].tkn2).valor, (yyvsp[-5].tkn3).tipo);    
 
                                                                                 qtdFuncoes++;
                                                                                 reseta_tabela(qtdFuncoes);                   
                                                                                 }
-#line 1373 "parser.tab.c"
+#line 1375 "parser.tab.c"
     break;
 
   case 6: /* ArgList: Arg ArgListLinha  */
-#line 212 "parser.y"
+#line 214 "parser.y"
                          {(yyval.tkn1).no_ = criaNo("ArgList");
                           filhos = malloc(2 * sizeof(no *));
                           filhos[0] = (yyvsp[-1].tkn1).no_; 
@@ -1381,22 +1383,22 @@ yyreduce:
                           addFilhos((yyval.tkn1).no_,filhos,2);
                           free(filhos);    
                         }
-#line 1385 "parser.tab.c"
+#line 1387 "parser.tab.c"
     break;
 
   case 7: /* ArgList: %empty  */
-#line 219 "parser.y"
+#line 221 "parser.y"
   {(yyval.tkn1).no_ = criaNo("ArgList");
     filhos = malloc(1 * sizeof(no *));
     filhos[0] = criaNo("ε"); 
     addFilhos((yyval.tkn1).no_,filhos,1);
     free(filhos);
     }
-#line 1396 "parser.tab.c"
+#line 1398 "parser.tab.c"
     break;
 
   case 8: /* ArgListLinha: COMMA Arg ArgListLinha  */
-#line 227 "parser.y"
+#line 229 "parser.y"
                                      {(yyval.tkn1).no_ = criaNo("ArgListLinha");
                                       filhos = malloc(3 * sizeof(no *));
                                       filhos[0] = (yyvsp[-2].tkn1).no_; 
@@ -1405,22 +1407,22 @@ yyreduce:
                                       addFilhos((yyval.tkn1).no_,filhos,3);
                                       free(filhos);
                                     }
-#line 1409 "parser.tab.c"
+#line 1411 "parser.tab.c"
     break;
 
   case 9: /* ArgListLinha: %empty  */
-#line 235 "parser.y"
+#line 237 "parser.y"
    {(yyval.tkn1).no_ = criaNo("ArgListLinha");
     filhos = malloc(1 * sizeof(no *));
     filhos[0] = criaNo("ε"); 
     addFilhos((yyval.tkn1).no_,filhos,1);
     free(filhos);
     }
-#line 1420 "parser.tab.c"
+#line 1422 "parser.tab.c"
     break;
 
   case 10: /* Arg: Type IDENTIFIER  */
-#line 243 "parser.y"
+#line 245 "parser.y"
                      {(yyval.tkn1).no_ = criaNo("Arg");
                       filhos = malloc(2 * sizeof(no *));
                       filhos[0] = (yyvsp[-1].tkn3).no_;
@@ -1432,11 +1434,11 @@ yyreduce:
                       adiciona_tipo_para_declaracao_id((yyvsp[0].tkn2).valor, (yyvsp[-1].tkn3).tipo);
                       
                     }
-#line 1436 "parser.tab.c"
+#line 1438 "parser.tab.c"
     break;
 
   case 11: /* Declaration: Type IdentList SEMICOLON  */
-#line 256 "parser.y"
+#line 258 "parser.y"
                                      {(yyval.tkn1).no_ = criaNo("Declaration");
                                       filhos = malloc(3 * sizeof(no *));
                                       filhos[0] = (yyvsp[-2].tkn3).no_; 
@@ -1448,32 +1450,30 @@ yyreduce:
                                       adiciona_tipo_identilist((yyvsp[-1].tkn1).no_, (yyvsp[-2].tkn3).tipo);
 
                                     }
-#line 1452 "parser.tab.c"
+#line 1454 "parser.tab.c"
     break;
 
   case 12: /* Type: INT  */
-#line 269 "parser.y"
+#line 271 "parser.y"
             {(yyval.tkn3).no_ = criaNo("Type");
                filhos = malloc(1 * sizeof(no *));
                filhos[0] = criaNo("int"); 
                addFilhos((yyval.tkn3).no_,filhos,1);
                free(filhos);
 
-               // Tipo int possui valor 1
                (yyval.tkn3).tipo = valInt;
             }
-#line 1466 "parser.tab.c"
+#line 1467 "parser.tab.c"
     break;
 
   case 13: /* Type: FLOAT  */
-#line 279 "parser.y"
+#line 280 "parser.y"
           {(yyval.tkn3).no_ = criaNo("Type");
                filhos = malloc(1 * sizeof(no *));
                filhos[0] = criaNo("float"); 
                addFilhos((yyval.tkn3).no_,filhos,1);
                free(filhos);
 
-               // Tipo float possui valor 2
                (yyval.tkn3).tipo = valFloat;
           }
 #line 1480 "parser.tab.c"
@@ -1487,14 +1487,13 @@ yyreduce:
                addFilhos((yyval.tkn3).no_,filhos,1);
                free(filhos);
 
-               // Tipo char possui valor 3
                (yyval.tkn3).tipo = valChar;
           }
-#line 1494 "parser.tab.c"
+#line 1493 "parser.tab.c"
     break;
 
   case 15: /* IdentList: IDENTIFIER COMMA IdentList  */
-#line 300 "parser.y"
+#line 299 "parser.y"
                                       {(yyval.tkn1).no_ = criaNo("IdentList");
                                        filhos = malloc(3 * sizeof(no *));
                                        filhos[0] = criaNo((yyvsp[-2].tkn2).valor); 
@@ -1505,11 +1504,11 @@ yyreduce:
 
                                        checa_declaracao_id((yyvsp[-2].tkn2).valor);
                                     }
-#line 1509 "parser.tab.c"
+#line 1508 "parser.tab.c"
     break;
 
   case 16: /* IdentList: IDENTIFIER  */
-#line 311 "parser.y"
+#line 310 "parser.y"
                {(yyval.tkn1).no_ = criaNo("IdentList");
                 filhos = malloc(1 * sizeof(no *));
                 filhos[0] = criaNo((yyvsp[0].tkn2).valor); 
@@ -1518,11 +1517,11 @@ yyreduce:
 
                 checa_declaracao_id((yyvsp[0].tkn2).valor);
             }
-#line 1522 "parser.tab.c"
+#line 1521 "parser.tab.c"
     break;
 
   case 17: /* IdentListLinha: IDENTIFIER COMMA IdentListLinha  */
-#line 321 "parser.y"
+#line 320 "parser.y"
                                                 {(yyval.tkn1).no_ = criaNo("IdentListLinha");
                                        filhos = malloc(3 * sizeof(no *));
                                        filhos[0] = criaNo((yyvsp[-2].tkn2).valor); 
@@ -1531,60 +1530,59 @@ yyreduce:
                                        addFilhos((yyval.tkn1).no_,filhos,3);
                                        free(filhos);
 
-                                       checa_contexto_id((yyvsp[-2].tkn2).valor);
-                                       //checa_declaracao_id($1.valor);
+                                       checa_variavel_existe((yyvsp[-2].tkn2).valor);
                                     }
-#line 1538 "parser.tab.c"
+#line 1536 "parser.tab.c"
     break;
 
   case 18: /* IdentListLinha: IDENTIFIER  */
-#line 333 "parser.y"
+#line 331 "parser.y"
                {(yyval.tkn1).no_ = criaNo("IdentListLinha");
                 filhos = malloc(1 * sizeof(no *));
                 filhos[0] = criaNo((yyvsp[0].tkn2).valor); 
                 addFilhos((yyval.tkn1).no_,filhos,1);
                 free(filhos);
 
-                checa_contexto_id((yyvsp[0].tkn2).valor);
+                checa_variavel_existe((yyvsp[0].tkn2).valor);
             }
-#line 1551 "parser.tab.c"
+#line 1549 "parser.tab.c"
     break;
 
   case 19: /* IdentListLinha: %empty  */
-#line 341 "parser.y"
+#line 339 "parser.y"
     {(yyval.tkn1).no_ = criaNo("IdentListLinha");
     filhos = malloc(1 * sizeof(no *));
     filhos[0] = criaNo("ε"); 
     addFilhos((yyval.tkn1).no_,filhos,1);
     free(filhos);
     }
-#line 1562 "parser.tab.c"
+#line 1560 "parser.tab.c"
     break;
 
   case 20: /* Stmt: ForStmt  */
-#line 349 "parser.y"
+#line 347 "parser.y"
                 {(yyval.tkn1).no_ = criaNo("Stmt");
                  filhos = malloc(1 * sizeof(no *));
                  filhos[0] = (yyvsp[0].tkn1).no_; 
                  addFilhos((yyval.tkn1).no_,filhos,1);
                  free(filhos);   
             }
-#line 1573 "parser.tab.c"
+#line 1571 "parser.tab.c"
     break;
 
   case 21: /* Stmt: WhileStmt  */
-#line 356 "parser.y"
+#line 354 "parser.y"
                   {(yyval.tkn1).no_ = criaNo("Stmt");
                   filhos = malloc(1 * sizeof(no *));
                   filhos[0] = (yyvsp[0].tkn1).no_; 
                   addFilhos((yyval.tkn1).no_,filhos,1);
                   free(filhos);
             }
-#line 1584 "parser.tab.c"
+#line 1582 "parser.tab.c"
     break;
 
   case 22: /* Stmt: Expr SEMICOLON  */
-#line 363 "parser.y"
+#line 361 "parser.y"
                        {(yyval.tkn1).no_ = criaNo("Stmt");
                   filhos = malloc(2 * sizeof(no *));
                   filhos[0] = (yyvsp[-1].tkn3).no_; 
@@ -1592,55 +1590,55 @@ yyreduce:
                   addFilhos((yyval.tkn1).no_,filhos,2);
                   free(filhos);    
             }
-#line 1596 "parser.tab.c"
+#line 1594 "parser.tab.c"
     break;
 
   case 23: /* Stmt: IfStmt  */
-#line 371 "parser.y"
+#line 369 "parser.y"
                {(yyval.tkn1).no_ = criaNo("Stmt");
                 filhos = malloc(1 * sizeof(no *));
                 filhos[0] = (yyvsp[0].tkn1).no_; 
                 addFilhos((yyval.tkn1).no_,filhos,1);
                 free(filhos);
             }
-#line 1607 "parser.tab.c"
+#line 1605 "parser.tab.c"
     break;
 
   case 24: /* Stmt: CompoundStmt  */
-#line 378 "parser.y"
+#line 376 "parser.y"
                      {(yyval.tkn1).no_ = criaNo("Stmt");
                      filhos = malloc(1 * sizeof(no *));
                      filhos[0] = (yyvsp[0].tkn1).no_; 
                      addFilhos((yyval.tkn1).no_,filhos,1);
                      free(filhos);
                 }
-#line 1618 "parser.tab.c"
+#line 1616 "parser.tab.c"
     break;
 
   case 25: /* Stmt: Declaration  */
-#line 385 "parser.y"
+#line 383 "parser.y"
                     {(yyval.tkn1).no_ = criaNo("Stmt");
                      filhos = malloc(1 * sizeof(no *));
                      filhos[0] = (yyvsp[0].tkn1).no_; 
                      addFilhos((yyval.tkn1).no_,filhos,1);
                      free(filhos);
                 }
-#line 1629 "parser.tab.c"
+#line 1627 "parser.tab.c"
     break;
 
   case 26: /* Stmt: SEMICOLON  */
-#line 392 "parser.y"
+#line 390 "parser.y"
                   {(yyval.tkn1).no_ = criaNo("Stmt");
                    filhos = malloc(1 * sizeof(no *));
                    filhos[0] = criaNo(";"); 
                    addFilhos((yyval.tkn1).no_,filhos,1);
                    free(filhos);
                 }
-#line 1640 "parser.tab.c"
+#line 1638 "parser.tab.c"
     break;
 
   case 27: /* ForStmt: FOR OPENPARENTHESIS Expr SEMICOLON OptExpr SEMICOLON OptExpr CLOSEPARENTHESIS Stmt  */
-#line 400 "parser.y"
+#line 398 "parser.y"
                                                                                             {(yyval.tkn1).no_ = criaNo("ForStmt");
                                                                                             geraLabel();
                                                                                             filhos = malloc(4 * sizeof(no *));
@@ -1651,47 +1649,47 @@ yyreduce:
                                                                                             addFilhos((yyval.tkn1).no_,filhos, 4);
                                                                                             free(filhos);
                                                                                         }
-#line 1655 "parser.tab.c"
+#line 1653 "parser.tab.c"
     break;
 
   case 28: /* OptExpr: Expr  */
-#line 412 "parser.y"
+#line 410 "parser.y"
                  {(yyval.tkn1).no_ = criaNo("OptExpr");
                    filhos = malloc(1 * sizeof(no *));
                    filhos[0] = (yyvsp[0].tkn3).no_; 
                    addFilhos((yyval.tkn1).no_,filhos,1);
                    free(filhos);
             }
-#line 1666 "parser.tab.c"
+#line 1664 "parser.tab.c"
     break;
 
   case 29: /* OptExpr: %empty  */
-#line 418 "parser.y"
+#line 416 "parser.y"
     {(yyval.tkn1).no_ = criaNo("OptExpr");
      filhos = malloc(1 * sizeof(no *));
      filhos[0] = criaNo("ε"); 
      addFilhos((yyval.tkn1).no_,filhos,1);
      free(filhos);
      }
-#line 1677 "parser.tab.c"
+#line 1675 "parser.tab.c"
     break;
 
   case 30: /* WhileStmt: WHILE OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt  */
-#line 426 "parser.y"
+#line 424 "parser.y"
                                                             {(yyval.tkn1).no_ = criaNo("WhileStmt");
-                                                             geraLabel();
+                                                             geraLabel(); // Atualiza o label do GOTO
                                                              filhos = malloc(3 * sizeof(no *));
-                                                             filhos[0] = criaNo(label); //Precisa generalizar a Tag
+                                                             filhos[0] = criaNo(label);
                                                              filhos[1] = (yyvsp[0].tkn1).no_; 
                                                              filhos[2] = criaArvoreIfGotoWhile(label, (yyvsp[-2].tkn3).no_);
                                                              addFilhos((yyval.tkn1).no_,filhos,3);
                                                              free(filhos);
                                                             }
-#line 1691 "parser.tab.c"
+#line 1689 "parser.tab.c"
     break;
 
   case 31: /* IfStmt: IF OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt ElsePart  */
-#line 438 "parser.y"
+#line 436 "parser.y"
                                                                {(yyval.tkn1).no_ = criaNo("IfStmt");
                                                              filhos = malloc(6 * sizeof(no *));
                                                              filhos[0] = criaNo("if");
@@ -1703,11 +1701,11 @@ yyreduce:
                                                              addFilhos((yyval.tkn1).no_,filhos,6);
                                                              free(filhos);
                                                         }
-#line 1707 "parser.tab.c"
+#line 1705 "parser.tab.c"
     break;
 
   case 32: /* ElsePart: ELSE Stmt  */
-#line 452 "parser.y"
+#line 450 "parser.y"
                        {(yyval.tkn1).no_ = criaNo("ElsePart");
                         filhos = malloc(2 * sizeof(no *));
                         filhos[0] = criaNo("else");
@@ -1715,22 +1713,22 @@ yyreduce:
                         addFilhos((yyval.tkn1).no_,filhos,2);
                         free(filhos);
                     }
-#line 1719 "parser.tab.c"
+#line 1717 "parser.tab.c"
     break;
 
   case 33: /* ElsePart: %empty  */
-#line 459 "parser.y"
+#line 457 "parser.y"
                           {(yyval.tkn1).no_ = criaNo("ElsePart");
                            filhos = malloc(1 * sizeof(no *));
                            filhos[0] = criaNo("ε"); 
                            addFilhos((yyval.tkn1).no_,filhos,1);
                            free(filhos);
                            }
-#line 1730 "parser.tab.c"
+#line 1728 "parser.tab.c"
     break;
 
   case 34: /* CompoundStmt: OPENBRACKETS StmtList CLOSEBRACKETS  */
-#line 467 "parser.y"
+#line 465 "parser.y"
                                                   { (yyval.tkn1).no_ = criaNo("CompoundStmt");
                                                     filhos = malloc(3 * sizeof(no *));
                                                     filhos[0] = criaNo("{");
@@ -1739,11 +1737,11 @@ yyreduce:
                                                     addFilhos((yyval.tkn1).no_,filhos,3);
                                                     free(filhos);
 }
-#line 1743 "parser.tab.c"
+#line 1741 "parser.tab.c"
     break;
 
   case 35: /* StmtList: Stmt StmtListLinha  */
-#line 478 "parser.y"
+#line 476 "parser.y"
                                {(yyval.tkn1).no_ = criaNo("StmtList");
                                 filhos = malloc(2 * sizeof(no *));
                                 filhos[0] = (yyvsp[-1].tkn1).no_; 
@@ -1751,22 +1749,22 @@ yyreduce:
                                 addFilhos((yyval.tkn1).no_,filhos,2);
                                 free(filhos);
                             }
-#line 1755 "parser.tab.c"
+#line 1753 "parser.tab.c"
     break;
 
   case 36: /* StmtList: %empty  */
-#line 485 "parser.y"
+#line 483 "parser.y"
    {(yyval.tkn1).no_ = criaNo("StmtList");
     filhos = malloc(1 * sizeof(no *));
     filhos[0] = criaNo("ε"); 
     addFilhos((yyval.tkn1).no_,filhos,1);
     free(filhos);
     }
-#line 1766 "parser.tab.c"
+#line 1764 "parser.tab.c"
     break;
 
   case 37: /* StmtListLinha: Stmt StmtListLinha  */
-#line 493 "parser.y"
+#line 491 "parser.y"
                                    {(yyval.tkn1).no_ = criaNo("StmtListLinha");
                                     filhos = malloc(2 * sizeof(no *));
                                     filhos[0] = (yyvsp[-1].tkn1).no_; 
@@ -1774,22 +1772,22 @@ yyreduce:
                                     addFilhos((yyval.tkn1).no_,filhos,2);
                                     free(filhos);
                                 }
-#line 1778 "parser.tab.c"
+#line 1776 "parser.tab.c"
     break;
 
   case 38: /* StmtListLinha: %empty  */
-#line 500 "parser.y"
+#line 498 "parser.y"
    {(yyval.tkn1).no_ = criaNo("StmtListLinha");
     filhos = malloc(1 * sizeof(no *));
     filhos[0] = criaNo("ε"); 
     addFilhos((yyval.tkn1).no_,filhos,1);
     free(filhos);
     }
-#line 1789 "parser.tab.c"
+#line 1787 "parser.tab.c"
     break;
 
   case 39: /* Expr: IDENTIFIER ASSIGN Expr  */
-#line 508 "parser.y"
+#line 506 "parser.y"
                              {(yyval.tkn3).no_ = criaNo("Expr");
                                     filhos = malloc(3 * sizeof(no *));
                                     filhos[0] = criaNo((yyvsp[-2].tkn2).valor);
@@ -1798,125 +1796,129 @@ yyreduce:
                                     addFilhos((yyval.tkn3).no_,filhos,3);
                                     free(filhos);
 
-                                    checa_contexto_id((yyvsp[-2].tkn2).valor);
+                                    checa_variavel_existe((yyvsp[-2].tkn2).valor);
 
                                     simbolo_na_tabela *identificador;
                                     identificador = get_simbolo_da_tabela((yyvsp[-2].tkn2).valor);
                                     if(identificador == 0){
                                         (yyval.tkn3).tipo = 0;
                                     }else{
-                                        (yyval.tkn3).tipo = identificador->tipo;
+                                        (yyval.tkn3).tipo = checa_tipos(identificador->tipo, (yyvsp[0].tkn3).tipo);
+                                        
                                     }
                             }
-#line 1812 "parser.tab.c"
+#line 1811 "parser.tab.c"
     break;
 
   case 40: /* Expr: Rvalue  */
-#line 527 "parser.y"
+#line 526 "parser.y"
            {(yyval.tkn3).no_ = criaNo("Expr");
           filhos = malloc(1 * sizeof(no *));
-          filhos[0] = (yyvsp[0].tkn1).no_;
+          filhos[0] = (yyvsp[0].tkn3).no_;
           addFilhos((yyval.tkn3).no_,filhos,1);
           free(filhos);
 
-          // boleanos serao tratados como inteiros, como em C
-          (yyval.tkn3).tipo = valInt;
+          (yyval.tkn3).tipo = (yyvsp[0].tkn3).tipo;
         }
-#line 1826 "parser.tab.c"
+#line 1824 "parser.tab.c"
     break;
 
   case 41: /* Rvalue: Rvalue Compare Mag  */
-#line 538 "parser.y"
-                           {(yyval.tkn1).no_ = criaNo("Rvalue");
+#line 536 "parser.y"
+                           {(yyval.tkn3).no_ = criaNo("Rvalue");
                             filhos = malloc(3 * sizeof(no *));
-                            filhos[0] = (yyvsp[-2].tkn1).no_;
+                            filhos[0] = (yyvsp[-2].tkn3).no_;
                             filhos[1] = (yyvsp[-1].tkn1).no_;
                             filhos[2] = (yyvsp[0].tkn3).no_;
-                            addFilhos((yyval.tkn1).no_,filhos,3);
+                            addFilhos((yyval.tkn3).no_,filhos,3);
                             free(filhos);
+
+                            (yyval.tkn3).tipo = checa_tipos((yyvsp[-2].tkn3).tipo, (yyvsp[0].tkn3).tipo);
                         }
 #line 1839 "parser.tab.c"
     break;
 
   case 42: /* Rvalue: Mag  */
 #line 547 "parser.y"
-            {(yyval.tkn1).no_ = criaNo("Rvalue");
+            {(yyval.tkn3).no_ = criaNo("Rvalue");
             filhos = malloc(1 * sizeof(no *));
             filhos[0] = (yyvsp[0].tkn3).no_;
-            addFilhos((yyval.tkn1).no_,filhos,1);
+            addFilhos((yyval.tkn3).no_,filhos,1);
             free(filhos);
+
+            (yyval.tkn3).tipo = (yyvsp[0].tkn3).tipo;
         }
-#line 1850 "parser.tab.c"
+#line 1852 "parser.tab.c"
     break;
 
   case 43: /* Compare: EQ  */
-#line 556 "parser.y"
+#line 558 "parser.y"
                {(yyval.tkn1).no_ = criaNo("Compare");
                  filhos = malloc(1 * sizeof(no *));
                  filhos[0] = criaNo("==");
                  addFilhos((yyval.tkn1).no_,filhos,1);
                  free(filhos);
             }
-#line 1861 "parser.tab.c"
+#line 1863 "parser.tab.c"
     break;
 
   case 44: /* Compare: LT  */
-#line 563 "parser.y"
+#line 565 "parser.y"
                {(yyval.tkn1).no_ = criaNo("Compare");
                  filhos = malloc(1 * sizeof(no *));
                  filhos[0] = criaNo("<");
                  addFilhos((yyval.tkn1).no_,filhos,1);
                  free(filhos);
             }
-#line 1872 "parser.tab.c"
+#line 1874 "parser.tab.c"
     break;
 
   case 45: /* Compare: GT  */
-#line 570 "parser.y"
+#line 572 "parser.y"
                {(yyval.tkn1).no_ = criaNo("Compare");
                  filhos = malloc(1 * sizeof(no *));
                  filhos[0] = criaNo(">");
                  addFilhos((yyval.tkn1).no_,filhos,1);
                  free(filhos);
             }
-#line 1883 "parser.tab.c"
+#line 1885 "parser.tab.c"
     break;
 
   case 46: /* Compare: LTE  */
-#line 577 "parser.y"
+#line 579 "parser.y"
                 {(yyval.tkn1).no_ = criaNo("Compare");
                  filhos = malloc(1 * sizeof(no *));
                  filhos[0] = criaNo("<=");
                  addFilhos((yyval.tkn1).no_,filhos,1);
                  free(filhos);
             }
-#line 1894 "parser.tab.c"
+#line 1896 "parser.tab.c"
     break;
 
   case 47: /* Compare: GTE  */
-#line 584 "parser.y"
+#line 586 "parser.y"
                 {(yyval.tkn1).no_ = criaNo("Compare");
                  filhos = malloc(1 * sizeof(no *));
                  filhos[0] = criaNo(">=");
                  addFilhos((yyval.tkn1).no_,filhos,1);
                  free(filhos);
             }
-#line 1905 "parser.tab.c"
+#line 1907 "parser.tab.c"
     break;
 
   case 48: /* Compare: NEQ  */
-#line 591 "parser.y"
+#line 593 "parser.y"
                 {(yyval.tkn1).no_ = criaNo("Compare");
                  filhos = malloc(1 * sizeof(no *));
                  filhos[0] = criaNo("!=");
                  addFilhos((yyval.tkn1).no_,filhos,1);
                  free(filhos);
             }
-#line 1916 "parser.tab.c"
+#line 1918 "parser.tab.c"
     break;
 
   case 49: /* Mag: Mag PLUS Term  */
-#line 599 "parser.y"
+#line 601 "parser.y"
                       {(yyval.tkn3).no_ = criaNo("Mag");
                        filhos = malloc(3 * sizeof(no *));
                        filhos[0] = (yyvsp[-2].tkn3).no_;
@@ -1927,11 +1929,11 @@ yyreduce:
 
                        (yyval.tkn3).tipo = checa_tipos((yyvsp[-2].tkn3).tipo, (yyvsp[0].tkn3).tipo);
                     }
-#line 1931 "parser.tab.c"
+#line 1933 "parser.tab.c"
     break;
 
   case 50: /* Mag: Mag MINUS Term  */
-#line 610 "parser.y"
+#line 612 "parser.y"
                        {(yyval.tkn3).no_ = criaNo("Mag");
                         filhos = malloc(3 * sizeof(no *));
                         filhos[0] = (yyvsp[-2].tkn3).no_;
@@ -1942,11 +1944,11 @@ yyreduce:
 
                         (yyval.tkn3).tipo = checa_tipos((yyvsp[-2].tkn3).tipo, (yyvsp[0].tkn3).tipo);
                     }
-#line 1946 "parser.tab.c"
+#line 1948 "parser.tab.c"
     break;
 
   case 51: /* Mag: Term  */
-#line 621 "parser.y"
+#line 623 "parser.y"
              {(yyval.tkn3).no_ = criaNo("Mag");
               filhos = malloc(1 * sizeof(no *));
               filhos[0] = (yyvsp[0].tkn3).no_;
@@ -1955,11 +1957,11 @@ yyreduce:
 
               (yyval.tkn3).tipo = (yyvsp[0].tkn3).tipo;
             }
-#line 1959 "parser.tab.c"
+#line 1961 "parser.tab.c"
     break;
 
   case 52: /* Term: Term ASTERISK Factor  */
-#line 631 "parser.y"
+#line 633 "parser.y"
                              {(yyval.tkn3).no_ = criaNo("Term");
                               filhos = malloc(3 * sizeof(no *));
                               filhos[0] = (yyvsp[-2].tkn3).no_;
@@ -1970,11 +1972,11 @@ yyreduce:
 
                               (yyval.tkn3).tipo = checa_tipos((yyvsp[-2].tkn3).tipo, (yyvsp[0].tkn3).tipo);
                             }
-#line 1974 "parser.tab.c"
+#line 1976 "parser.tab.c"
     break;
 
   case 53: /* Term: Term SLASH Factor  */
-#line 642 "parser.y"
+#line 644 "parser.y"
                           {(yyval.tkn3).no_ = criaNo("Term");
                            filhos = malloc(3 * sizeof(no *));
                            filhos[0] = (yyvsp[-2].tkn3).no_;
@@ -1985,11 +1987,11 @@ yyreduce:
 
                            (yyval.tkn3).tipo = checa_tipos((yyvsp[-2].tkn3).tipo, (yyvsp[0].tkn3).tipo);
                         }
-#line 1989 "parser.tab.c"
+#line 1991 "parser.tab.c"
     break;
 
   case 54: /* Term: Factor  */
-#line 653 "parser.y"
+#line 655 "parser.y"
                {(yyval.tkn3).no_ = criaNo("Term");
                 filhos = malloc(1 * sizeof(no *));
                 filhos[0] = (yyvsp[0].tkn3).no_;
@@ -1998,11 +2000,11 @@ yyreduce:
 
                 (yyval.tkn3).tipo = (yyvsp[0].tkn3).tipo;
             }
-#line 2002 "parser.tab.c"
+#line 2004 "parser.tab.c"
     break;
 
   case 55: /* Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  */
-#line 663 "parser.y"
+#line 665 "parser.y"
                                                {(yyval.tkn3).no_ = criaNo("Factor");
                                                 filhos = malloc(3 * sizeof(no *));
                                                 filhos[0] = criaNo("(");
@@ -2013,11 +2015,11 @@ yyreduce:
 
                                                 (yyval.tkn3).tipo = (yyvsp[-1].tkn3).tipo;
                                             }
-#line 2017 "parser.tab.c"
+#line 2019 "parser.tab.c"
     break;
 
   case 56: /* Factor: MINUS Factor  */
-#line 674 "parser.y"
+#line 676 "parser.y"
                      {(yyval.tkn3).no_ = criaNo("Factor");
                       filhos = malloc(2 * sizeof(no *));
                       filhos[0] = criaNo("-");
@@ -2027,11 +2029,11 @@ yyreduce:
 
                       (yyval.tkn3).tipo = (yyvsp[0].tkn3).tipo;
                 }
-#line 2031 "parser.tab.c"
+#line 2033 "parser.tab.c"
     break;
 
   case 57: /* Factor: PLUS Factor  */
-#line 684 "parser.y"
+#line 686 "parser.y"
                     {(yyval.tkn3).no_ = criaNo("Factor");
                      filhos = malloc(2 * sizeof(no *));
                      filhos[0] = criaNo("+");
@@ -2041,11 +2043,11 @@ yyreduce:
 
                      (yyval.tkn3).tipo = (yyvsp[0].tkn3).tipo;
                 }
-#line 2045 "parser.tab.c"
+#line 2047 "parser.tab.c"
     break;
 
   case 58: /* Factor: IDENTIFIER  */
-#line 694 "parser.y"
+#line 696 "parser.y"
                    {(yyval.tkn3).no_ = criaNo("Factor");
                     filhos = malloc(1 * sizeof(no *));
                     filhos[0] = criaNo((yyvsp[0].tkn2).valor);
@@ -2060,14 +2062,14 @@ yyreduce:
                         (yyval.tkn3).tipo = identificador->tipo;
                     }
 
-                    checa_contexto_id((yyvsp[0].tkn2).valor);
+                    checa_variavel_existe((yyvsp[0].tkn2).valor);
                     
                 }
-#line 2067 "parser.tab.c"
+#line 2069 "parser.tab.c"
     break;
 
   case 59: /* Factor: NUMBER  */
-#line 712 "parser.y"
+#line 714 "parser.y"
                {(yyval.tkn3).no_ = criaNo("Factor");
                 filhos = malloc(1 * sizeof(no *));
                 filhos[0] = criaNo((yyvsp[0].tkn2).valor);
@@ -2076,11 +2078,11 @@ yyreduce:
                 
                 (yyval.tkn3).tipo = valInt;
                 }
-#line 2080 "parser.tab.c"
+#line 2082 "parser.tab.c"
     break;
 
   case 60: /* Factor: FLOATNUMBER  */
-#line 723 "parser.y"
+#line 725 "parser.y"
                     {(yyval.tkn3).no_ = criaNo("Factor");
                      filhos = malloc(1 * sizeof(no *));
                      filhos[0] = criaNo((yyvsp[0].tkn2).valor);
@@ -2089,11 +2091,11 @@ yyreduce:
 
                      (yyval.tkn3).tipo = valInt;
                 }
-#line 2093 "parser.tab.c"
+#line 2095 "parser.tab.c"
     break;
 
   case 61: /* Factor: CHARACTER  */
-#line 732 "parser.y"
+#line 734 "parser.y"
                    {(yyval.tkn3).no_ = criaNo("Factor");
                     filhos = malloc(1 * sizeof(no *));
                     filhos[0] = criaNo((yyvsp[0].tkn2).valor);
@@ -2102,21 +2104,21 @@ yyreduce:
 
                     (yyval.tkn3).tipo = valChar;
                 }
-#line 2106 "parser.tab.c"
+#line 2108 "parser.tab.c"
     break;
 
   case 62: /* Factor: IDENTIFIER OPENPARENTHESIS IdentListLinha CLOSEPARENTHESIS  */
-#line 741 "parser.y"
+#line 743 "parser.y"
                                                                     {(yyval.tkn3).no_ = criaNo("Factor");
                                                                 filhos = malloc(4 * sizeof(no *));
                                                                 filhos[0] = criaNo((yyvsp[-3].tkn2).valor);
-                                                                filhos[0] = criaNo("(");
-                                                                filhos[1] = (yyvsp[-1].tkn1).no_;
-                                                                filhos[2] = criaNo(")");
+                                                                filhos[1] = criaNo("(");
+                                                                filhos[2] = (yyvsp[-1].tkn1).no_;
+                                                                filhos[3] = criaNo(")");
                                                                 addFilhos((yyval.tkn3).no_,filhos,4);
                                                                 free(filhos);
 
-                                                                checa_contexto_id((yyvsp[-3].tkn2).valor); 
+                                                                checa_variavel_existe((yyvsp[-3].tkn2).valor); 
 
                                                                 simbolo_na_tabela *identificador;
                                                                 identificador = get_simbolo_da_tabela((yyvsp[-3].tkn2).valor);
@@ -2128,11 +2130,11 @@ yyreduce:
 
                                                                 
                                                             }
-#line 2132 "parser.tab.c"
+#line 2134 "parser.tab.c"
     break;
 
 
-#line 2136 "parser.tab.c"
+#line 2138 "parser.tab.c"
 
       default: break;
     }
@@ -2326,12 +2328,14 @@ yyreturn:
   return yyresult;
 }
 
-#line 764 "parser.y"
+#line 766 "parser.y"
 
 
 int main(){ 
     //yydebug = 1;
-    yyin = fopen("Exemplos/entrada_sem_erros.txt", "r");
+
+    yyin = fopen("entrada.txt", "r");
+    //yyin = fopen("Exemplos/entrada_sem_erros.txt", "r");
     //yyin = fopen("Exemplos/entrada_com_erro_lexico.txt", "r");
     //yyin = fopen("Exemplos/entrada_com_erro_sintatico.txt", "r");
     //yyin = fopen("Exemplos/entrada_com_erro_semantico.txt", "r");
@@ -2350,7 +2354,7 @@ int main(){
 }
 
 void yyerror(const char* msg) {
-    fprintf(stderr, "%s\n", msg);
+    fprintf(stderr, "Linha %d: %s\n",LINHA, msg);
 }
 
 no* criaNo(char *nome){
@@ -2395,6 +2399,7 @@ no* criaArvoreIfGotoWhile(char *tag, no* expr){
     no **tempFilhos = malloc(5 * sizeof(no *));
     no *tempNo;
 
+    // A árvore do GOTO é criada manualmente
     char *gotoStr = malloc(50);
     strcpy(gotoStr, "Goto ");
     strcat(gotoStr, tag);
@@ -2407,7 +2412,6 @@ no* criaArvoreIfGotoWhile(char *tag, no* expr){
     tempFilhos[1] = criaNo("(");
     tempFilhos[2] = expr;
     tempFilhos[3] = criaNo(")");
-    // Eu removi direto a parte do else, verificar se da algum problema
 
     addFilhos(arvore,tempFilhos,5);
     free(tempFilhos);
@@ -2421,7 +2425,7 @@ no* criaArvoreIfGotoFor(char *tag, no* expr, no* optExpr){
     no **tempFilhos = malloc(5 * sizeof(no *));
 
 
-    // As árvores são criadas de baixo para cima para usar a mesma lista
+    // As árvores são criadas de baixo para cima para usar a mesma variável como lista filhos
     char *gotoStr = malloc(50);
     strcpy(gotoStr, "Goto ");
     strcat(gotoStr, tag);
@@ -2453,7 +2457,6 @@ no* criaArvoreIfGotoFor(char *tag, no* expr, no* optExpr){
     tempFilhos[1] = criaNo("(");
     tempFilhos[2] = expr;
     tempFilhos[3] = criaNo(")");
-    // Eu removi direto a parte do else, verificar se da algum problema
 
     addFilhos(arvore,tempFilhos,5);
     free(tempFilhos);

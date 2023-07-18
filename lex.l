@@ -18,7 +18,7 @@ digito[0-9]
 "if"                            {return IF;}
 "else"                          {return ELSE;}
 ['].[']                         {yylval.tkn2.valor = (char *) strdup(yytext); return CHARACTER;}
-{letra}({letra}|{digito})*      {yylval.tkn2.valor = (char *) strdup(yytext); return IDENTIFIER;}
+{letra}({letra}|{digito}|[_])*  {yylval.tkn2.valor = (char *) strdup(yytext); return IDENTIFIER;}
 [-]?{digito}+                   {yylval.tkn2.valor = (char *) strdup(yytext); return NUMBER;}
 [-]?{digito}*\.{digito}+        {yylval.tkn2.valor = (char *) strdup(yytext); return FLOATNUMBER;}  
 "+"                             {return PLUS;}

@@ -13,7 +13,7 @@ typedef struct simbolo_na_tabela simbolo_na_tabela;
 simbolo_na_tabela *tabela_simbolos = (simbolo_na_tabela *)0;
 
 //posição com as funções
-simbolo_na_tabela *posicao_func  = (simbolo_na_tabela *)0;
+simbolo_na_tabela *posicao_func  = (simbolo_na_tabela *)0; //Armazana a posição da tabela em que os identificadores de função estarão armazenados.
 
 //Operações existentes na tabela
 simbolo_na_tabela * put_simbolo_na_tabela(char *simbolo)
@@ -43,6 +43,7 @@ void print_tabela()
         printf("simbolo: %s, tipo: %d \n", ptr->valor, ptr->tipo);
 }
 
+// Apaga a tabela até chegar na posição em que as funções estão armazenadas
 void limpa_tabela(simbolo_na_tabela * ptr){
     if(ptr->proximo != posicao_func){
         limpa_tabela(ptr->proximo);
@@ -52,11 +53,13 @@ void limpa_tabela(simbolo_na_tabela * ptr){
     free(ptr);
 }
 
+// Reseta a tabela para um novo contexto 
 simbolo_na_tabela * reseta_tabela(int index){
     //print_tabela();
     simbolo_na_tabela *ptr;
     ptr = tabela_simbolos;
 
+    //Todos os elementos referentes ao contexto atual serão removidos, só permanecendo os identificadores de funções
     if(ptr->proximo != posicao_func){
         limpa_tabela(ptr->proximo);
     }

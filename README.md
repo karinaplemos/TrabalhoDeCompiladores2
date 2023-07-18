@@ -3,25 +3,32 @@ Trabalho referente à disciplina de Compiladores no semestre 2023.1.
 
 Alunas: Gabriela Pinheiro e Karina Lemos 
 
+### Input
+O código de entrada deverá ser inserido no arquivo entrada.txt
+
+A pasta Exemplos possui diferentes exemplos de códigos que podem ser usados. 
+
 ### **Este trabalho necessita o uso do Bison3** 
 
 ## Como rodar o lex e o bison:
  ### Linux/Mac:
     make
 ### Windows:    
-Este comeado considera que o usuário tenha instalado o pacote [WinFlexBison](https://community.chocolatey.org/packages/winflexbison3).
-
-Caso contrário, é possível usar o comando anterior.
+Este comando considera que o usuário tenha instalado o pacote [WinFlexBison](https://community.chocolatey.org/packages/winflexbison3).
 
     make win
 
+Caso contrário, é possível usar o comando anterior.
 ### Rodar somente o scanner (Depois de já ter sido gerado):
     make scan
+
+### Rodar somente o scanner imprimindo a árvore no terminal (Depois de já ter sido gerado):
+    make scan_terminal
 
 ## Output 
 Em caso de erros a saída é uma mensagem de erro
   #### Erro léxico ou sintático:
-  - sintax error
+  - Linha x: sintax error
 
   #### Erro semântico:
   ##### Verificação de tipos
@@ -44,3 +51,7 @@ Em caso de nenhum erro a saída é uma árvore escrita no arquivo saida.txt.
 - [x] Verificação de tipos -> Gabriela
 
 - [x] Contexto de identificadores -> Karina
+
+
+## Restrições de implementação
+A única restrição de implementação conhecida é que não é feita a checagem do tipo e quantidade dos argumentos ao se usar uma função. Só se verifica se eles já foram declarados.

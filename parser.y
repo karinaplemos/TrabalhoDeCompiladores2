@@ -36,8 +36,8 @@
     void geraLabel();
 
     //Funções de erro semântico
-    void identificador_ja_declarado(char *identificador, int linha);
-    void identificador_nao_declarado(char *identificador, int linha);
+    void identificador_ja_declarado(char *identificador);
+    void identificador_nao_declarado(char *identificador);
 
     // Variaveis da árvore
     no *raiz;
@@ -49,7 +49,7 @@
         if(simb == 0)
             simb = put_simbolo_na_tabela(identificador);
         else{
-            identificador_ja_declarado(identificador, LINHA);
+            identificador_ja_declarado(identificador);
         }
         return 0;
     }   
@@ -77,11 +77,11 @@
         return 0;
     }
 
-    int checa_contexto_id(char *identificador){
+    int checa_variavel_existe(char *identificador){
         simbolo_na_tabela *simb;
         simb = get_simbolo_da_tabela(identificador);
         if(simb == 0){
-            identificador_nao_declarado(identificador, LINHA);
+            identificador_nao_declarado(identificador);
         }
         return 0;
     }
@@ -107,7 +107,7 @@
         if((tipo1 == valChar && tipo2 != valChar) || (tipo1 != valChar && tipo2 == valChar)){
             // foi encontrado o erro
             char *msg_erro = malloc(50);
-            sprintf(msg_erro, "Linha %d: operacao invalida entre os tipos \"%s\" e \"%s\"\n",LINHA, val_para_tipo(tipo1),val_para_tipo(tipo2));
+            sprintf(msg_erro, "Operacao invalida entre os tipos \"%s\" e \"%s\"\n", val_para_tipo(tipo1),val_para_tipo(tipo2));
             yyerror(msg_erro);
             free(msg_erro);
             return 0;
@@ -120,16 +120,16 @@
         return 0;
     }
 
-    void identificador_ja_declarado(char *identificador, int linha){    
+    void identificador_ja_declarado(char *identificador){    
         char *msg_erro = malloc(50);
-        sprintf(msg_erro, "Linha %d: Identificador %s ja declarado anteriormente\n", linha, identificador);
+        sprintf(msg_erro, "Identificador %s ja declarado anteriormente\n", identificador);
         yyerror(msg_erro);
         free(msg_erro);
     }
 
-    void identificador_nao_declarado(char *identificador, int linha){    
+    void identificador_nao_declarado(char *identificador){    
         char *msg_erro = malloc(50);
-        sprintf(msg_erro, "Linha %d: Identicador %s nao declarado anteriormente\n", linha, identificador);
+        sprintf(msg_erro, "Identicador %s nao declarado anteriormente\n", identificador);
         yyerror(msg_erro);
         free(msg_erro);
     }
@@ -157,8 +157,8 @@
 
 %token <tkn1> INT FLOAT CHAR FOR WHILE IF ELSE ASSIGN EQ LT GT GTE LTE NEQ PLUS MINUS ASTERISK SLASH SEMICOLON COMMA OPENPARENTHESIS CLOSEPARENTHESIS OPENBRACKETS CLOSEBRACKETS 
 %token <tkn2> NUMBER FLOATNUMBER CHARACTER IDENTIFIER
-%type  <tkn1> FunctionList Function ArgList Arg ArgListLinha Declaration IdentList IdentListLinha Stmt ForStmt WhileStmt IfStmt CompoundStmt OptExpr ElsePart StmtList StmtListLinha Rvalue Compare 
-%type  <tkn3> Type Mag Term Factor Expr
+%type  <tkn1> FunctionList Function ArgList Arg ArgListLinha Declaration IdentList IdentListLinha Stmt ForStmt WhileStmt IfStmt CompoundStmt OptExpr ElsePart StmtList StmtListLinha Compare 
+%type  <tkn3> Type Mag Term Factor Expr Rvalue
 
 // Precedencia para resolver o conflito de shift/reduce do else
 %precedence NOELSE
@@ -166,10 +166,10 @@
 
 %%
 
-Program: FunctionList{raiz = criaNo("Program"); 
-                      filhos = malloc(sizeof(no *));
+Program: FunctionList{raiz = criaNo("Program"); //Atualiza a raiz da árvore a ser impressa
+                      filhos = malloc(sizeof(no *)); //Cria a lista de filhos do nó atual
                       filhos[0] = $1.no_; 
-                      raiz = addFilhos(raiz,filhos, 1);
+                      raiz = addFilhos(raiz,filhos, 1); // Adiciona os filhos ao nó atual
                       free(filhos);
                     }
 ; 
@@ -201,7 +201,9 @@ Function: Type IDENTIFIER OPENPARENTHESIS ArgList CLOSEPARENTHESIS CompoundStmt 
                                                                                  addFilhos($$.no_,filhos,6);
                                                                                  free(filhos);      
 
+                                                                                // verifica se o identificador já foi declarado
                                                                                 checa_declaracao_id($2.valor);
+                                                                                // Adiciona o tipo para o identificador da função
                                                                                 adiciona_tipo_para_declaracao_id($2.valor, $1.tipo);    
 
                                                                                 qtdFuncoes++;
@@ -272,7 +274,6 @@ Type:   INT {$$.no_ = criaNo("Type");
                addFilhos($$.no_,filhos,1);
                free(filhos);
 
-               // Tipo int possui valor 1
                $$.tipo = valInt;
             }          
 |       
@@ -282,7 +283,6 @@ Type:   INT {$$.no_ = criaNo("Type");
                addFilhos($$.no_,filhos,1);
                free(filhos);
 
-               // Tipo float possui valor 2
                $$.tipo = valFloat;
           }                                     
 |                   
@@ -292,7 +292,6 @@ Type:   INT {$$.no_ = criaNo("Type");
                addFilhos($$.no_,filhos,1);
                free(filhos);
 
-               // Tipo char possui valor 3
                $$.tipo = valChar;
           } 
 ;
@@ -326,8 +325,7 @@ IdentListLinha: IDENTIFIER COMMA IdentListLinha {$$.no_ = criaNo("IdentListLinha
                                        addFilhos($$.no_,filhos,3);
                                        free(filhos);
 
-                                       checa_contexto_id($1.valor);
-                                       //checa_declaracao_id($1.valor);
+                                       checa_variavel_existe($1.valor);
                                     }
 |         
     IDENTIFIER {$$.no_ = criaNo("IdentListLinha");
@@ -336,7 +334,7 @@ IdentListLinha: IDENTIFIER COMMA IdentListLinha {$$.no_ = criaNo("IdentListLinha
                 addFilhos($$.no_,filhos,1);
                 free(filhos);
 
-                checa_contexto_id($1.valor);
+                checa_variavel_existe($1.valor);
             }
 |   {$$.no_ = criaNo("IdentListLinha");
     filhos = malloc(1 * sizeof(no *));
@@ -424,9 +422,9 @@ OptExpr:    Expr {$$.no_ = criaNo("OptExpr");
 ;
 
 WhileStmt: WHILE OPENPARENTHESIS Expr CLOSEPARENTHESIS Stmt {$$.no_ = criaNo("WhileStmt");
-                                                             geraLabel();
+                                                             geraLabel(); // Atualiza o label do GOTO
                                                              filhos = malloc(3 * sizeof(no *));
-                                                             filhos[0] = criaNo(label); //Precisa generalizar a Tag
+                                                             filhos[0] = criaNo(label);
                                                              filhos[1] = $5.no_; 
                                                              filhos[2] = criaArvoreIfGotoWhile(label, $3.no_);
                                                              addFilhos($$.no_,filhos,3);
@@ -513,14 +511,15 @@ Expr: IDENTIFIER ASSIGN Expr {$$.no_ = criaNo("Expr");
                                     addFilhos($$.no_,filhos,3);
                                     free(filhos);
 
-                                    checa_contexto_id($1.valor);
+                                    checa_variavel_existe($1.valor);
 
                                     simbolo_na_tabela *identificador;
                                     identificador = get_simbolo_da_tabela($1.valor);
                                     if(identificador == 0){
                                         $$.tipo = 0;
                                     }else{
-                                        $$.tipo = identificador->tipo;
+                                        $$.tipo = checa_tipos(identificador->tipo, $3.tipo);
+                                        
                                     }
                             }                     
 | 
@@ -530,8 +529,7 @@ Expr: IDENTIFIER ASSIGN Expr {$$.no_ = criaNo("Expr");
           addFilhos($$.no_,filhos,1);
           free(filhos);
 
-          // boleanos serao tratados como inteiros, como em C
-          $$.tipo = valInt;
+          $$.tipo = $1.tipo;
         }
 ;
 
@@ -542,6 +540,8 @@ Rvalue: Rvalue Compare Mag {$$.no_ = criaNo("Rvalue");
                             filhos[2] = $3.no_;
                             addFilhos($$.no_,filhos,3);
                             free(filhos);
+
+                            $$.tipo = checa_tipos($1.tipo, $3.tipo);
                         }
 | 
         Mag {$$.no_ = criaNo("Rvalue");
@@ -549,6 +549,8 @@ Rvalue: Rvalue Compare Mag {$$.no_ = criaNo("Rvalue");
             filhos[0] = $1.no_;
             addFilhos($$.no_,filhos,1);
             free(filhos);
+
+            $$.tipo = $1.tipo;
         }
 ;  
 
@@ -705,7 +707,7 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
                         $$.tipo = identificador->tipo;
                     }
 
-                    checa_contexto_id($1.valor);
+                    checa_variavel_existe($1.valor);
                     
                 }                                   
 |       
@@ -741,13 +743,13 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
         IDENTIFIER OPENPARENTHESIS IdentListLinha CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
                                                                 filhos = malloc(4 * sizeof(no *));
                                                                 filhos[0] = criaNo($1.valor);
-                                                                filhos[0] = criaNo("(");
-                                                                filhos[1] = $3.no_;
-                                                                filhos[2] = criaNo(")");
+                                                                filhos[1] = criaNo("(");
+                                                                filhos[2] = $3.no_;
+                                                                filhos[3] = criaNo(")");
                                                                 addFilhos($$.no_,filhos,4);
                                                                 free(filhos);
 
-                                                                checa_contexto_id($1.valor); 
+                                                                checa_variavel_existe($1.valor); 
 
                                                                 simbolo_na_tabela *identificador;
                                                                 identificador = get_simbolo_da_tabela($1.valor);
@@ -765,7 +767,9 @@ Factor: OPENPARENTHESIS Expr CLOSEPARENTHESIS  {$$.no_ = criaNo("Factor");
 
 int main(){ 
     //yydebug = 1;
-    yyin = fopen("Exemplos/entrada_sem_erros.txt", "r");
+
+    yyin = fopen("entrada.txt", "r");
+    //yyin = fopen("Exemplos/entrada_sem_erros.txt", "r");
     //yyin = fopen("Exemplos/entrada_com_erro_lexico.txt", "r");
     //yyin = fopen("Exemplos/entrada_com_erro_sintatico.txt", "r");
     //yyin = fopen("Exemplos/entrada_com_erro_semantico.txt", "r");
@@ -784,7 +788,7 @@ int main(){
 }
 
 void yyerror(const char* msg) {
-    fprintf(stderr, "%s\n", msg);
+    fprintf(stderr, "Linha %d: %s\n",LINHA, msg);
 }
 
 no* criaNo(char *nome){
@@ -829,6 +833,7 @@ no* criaArvoreIfGotoWhile(char *tag, no* expr){
     no **tempFilhos = malloc(5 * sizeof(no *));
     no *tempNo;
 
+    // A árvore do GOTO é criada manualmente
     char *gotoStr = malloc(50);
     strcpy(gotoStr, "Goto ");
     strcat(gotoStr, tag);
@@ -841,7 +846,6 @@ no* criaArvoreIfGotoWhile(char *tag, no* expr){
     tempFilhos[1] = criaNo("(");
     tempFilhos[2] = expr;
     tempFilhos[3] = criaNo(")");
-    // Eu removi direto a parte do else, verificar se da algum problema
 
     addFilhos(arvore,tempFilhos,5);
     free(tempFilhos);
@@ -855,7 +859,7 @@ no* criaArvoreIfGotoFor(char *tag, no* expr, no* optExpr){
     no **tempFilhos = malloc(5 * sizeof(no *));
 
 
-    // As árvores são criadas de baixo para cima para usar a mesma lista
+    // As árvores são criadas de baixo para cima para usar a mesma variável como lista filhos
     char *gotoStr = malloc(50);
     strcpy(gotoStr, "Goto ");
     strcat(gotoStr, tag);
@@ -887,7 +891,6 @@ no* criaArvoreIfGotoFor(char *tag, no* expr, no* optExpr){
     tempFilhos[1] = criaNo("(");
     tempFilhos[2] = expr;
     tempFilhos[3] = criaNo(")");
-    // Eu removi direto a parte do else, verificar se da algum problema
 
     addFilhos(arvore,tempFilhos,5);
     free(tempFilhos);
