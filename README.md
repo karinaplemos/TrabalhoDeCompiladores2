@@ -54,4 +54,6 @@ Em caso de nenhum erro a saída é uma árvore escrita no arquivo saida.txt.
 
 
 ## Restrições de implementação
-A única restrição de implementação conhecida é que não é feita a checagem do tipo e quantidade dos argumentos ao se usar uma função. Só se verifica se eles já foram declarados.
+Existem duas restrições de implementações conhecidas neste trabalho:
+- Não é feita a checagem do tipo e quantidade dos argumentos ao se usar uma função. Só se verifica se eles já foram declarados.
+- Não existe distinção entre um indentificador que delimite uma função de uma variável. Logo, ao se executar uma função não se verifica se aquele identificador representa uma função ou variável. 
